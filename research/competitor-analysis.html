@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Competitor Analysis — Ornate Christmas Lighting</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0D0D0D;
+      --green-dark: #142E21;
+      --green:      #1B3A2A;
+      --gold:       #C9A84C;
+      --cream:      #FAF6EE;
+      --warm-white: #F5F0E8;
+      --gray:       rgba(245,240,232,0.55);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--warm-white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--green-dark);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      padding: 2.5rem 3rem;
+    }
+
+    .header__label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .header__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem;
+      color: var(--warm-white);
+      margin-bottom: 0.4rem;
+    }
+
+    .header__meta {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 3rem;
+    }
+
+    /* SECTION TITLES */
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem;
+      color: var(--warm-white);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    /* LEADERBOARD TABLE */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(201,168,76,0.15);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    thead {
+      background: var(--green-dark);
+    }
+
+    th {
+      padding: 0.9rem 1rem;
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      white-space: nowrap;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: rgba(245,240,232,0.85);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover { background: rgba(201,168,76,0.04); }
+
+    .rank { font-weight: 700; color: var(--gold); }
+
+    .company-name { font-weight: 700; color: var(--warm-white); }
+
+    .score-cell { text-align: center; font-weight: 600; }
+
+    .avg-score {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-align: center;
+    }
+
+    .score-bar {
+      display: inline-block;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--gold);
+      opacity: 0.7;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+
+    /* SCORE COLORS */
+    .s9 { color: #86efac; }
+    .s8 { color: #a3e635; }
+    .s7 { color: #fcd34d; }
+    .s6 { color: #fb923c; }
+    .s5, .s4, .s3 { color: #fca5a5; }
+
+    /* COMPETITOR CARDS */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .card {
+      background: var(--green-dark);
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover { border-color: rgba(201,168,76,0.3); }
+
+    .card--primary { border-color: rgba(201,168,76,0.25); }
+
+    .card__header {
+      padding: 1.25rem 1.5rem;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .card__rank {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.25rem;
+    }
+
+    .card__name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      color: var(--warm-white);
+    }
+
+    .card__score-badge {
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: 8px;
+      padding: 0.5rem 0.85rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .card__score-badge .score-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      line-height: 1;
+      display: block;
+    }
+
+    .card__score-badge .score-label {
+      font-size: 0.65rem;
+      color: var(--gray);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .card__body {
+      padding: 1.25rem 1.5rem;
+    }
+
+    .card__url {
+      font-size: 0.8rem;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      opacity: 0.8;
+    }
+
+    .card__row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    .card__row-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      min-width: 100px;
+      padding-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .card__row-value {
+      color: rgba(245,240,232,0.8);
+      line-height: 1.55;
+    }
+
+    .card__divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin: 1rem 0;
+    }
+
+    .card__tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin: 0.2rem;
+    }
+
+    .tag--win   { background: rgba(34,197,94,0.12);  color: #86efac; border: 1px solid rgba(34,197,94,0.2); }
+    .tag--gap   { background: rgba(239,68,68,0.1);   color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+    .tag--note  { background: rgba(201,168,76,0.1);  color: var(--gold); border: 1px solid rgba(201,168,76,0.2); }
+
+    .colors-row {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    .color-hex {
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: var(--gray);
+    }
+
+    /* PATTERNS */
+    .patterns-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .pattern-card {
+      background: var(--green-dark);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    .pattern-card__num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      color: rgba(201,168,76,0.25);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .pattern-card__title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--warm-white);
+      margin-bottom: 0.5rem;
+    }
+
+    .pattern-card__body {
+      font-size: 0.88rem;
+      color: var(--gray);
+      line-height: 1.65;
+      margin-bottom: 0.75rem;
+    }
+
+    .pattern-card__lesson {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--gold);
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(201,168,76,0.15);
+    }
+
+    /* GAPS */
+    .gaps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-top: 1.25rem;
+    }
+
+    .gap-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1.1rem 1.25rem;
+      background: var(--green-dark);
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: 8px;
+      align-items: flex-start;
+    }
+
+    .gap-item__num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      line-height: 1;
+      flex-shrink: 0;
+      min-width: 24px;
+    }
+
+    .gap-item__text {
+      font-size: 0.9rem;
+      color: rgba(245,240,232,0.8);
+      line-height: 1.6;
+    }
+
+    .gap-item__text strong { color: var(--warm-white); }
+
+    /* SECTION SPACING */
+    .section { margin-bottom: 4rem; }
+
+    @media (max-width: 700px) {
+      .container { padding: 2rem 1.25rem; }
+      .header { padding: 1.75rem 1.25rem; }
+      .header__title { font-size: 1.7rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .patterns-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <p class="header__label">Ornate Christmas Lighting — Internal Research</p>
+    <h1 class="header__title">Competitor Analysis</h1>
+    <p class="header__meta">Fairfield County, CT Christmas Lighting Market &nbsp;|&nbsp; Compiled March 2026 &nbsp;|&nbsp; 8 competitors analyzed</p>
+  </div>
+
+  <div class="container">
+
+    <!-- LEADERBOARD -->
+    <div class="section">
+      <span class="section-label">Overall Rankings</span>
+      <h2 class="section-title">Master Scoring Leaderboard</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Company</th>
+              <th>Visual</th>
+              <th>Copy</th>
+              <th>Social Proof</th>
+              <th>CTAs</th>
+              <th>Mobile</th>
+              <th>Trust</th>
+              <th>Photos</th>
+              <th>Conversion</th>
+              <th>AVG</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rank">1</td>
+              <td class="company-name">Decorate With Lights</td>
+              <td class="score-cell s9">9</td><td class="score-cell s9">9</td><td class="score-cell s7">7</td>
+              <td class="score-cell s9">9</td><td class="score-cell s9">9</td><td class="score-cell s7">7</td>
+              <td class="score-cell s9">9</td><td class="score-cell s9">9</td>
+              <td class="avg-score">8.5</td>
+            </tr>
+            <tr>
+              <td class="rank">2</td>
+              <td class="company-name">Summer Rain Sprinklers</td>
+              <td class="score-cell s6">6</td><td class="score-cell s8">8</td><td class="score-cell s9">9</td>
+              <td class="score-cell s7">7</td><td class="score-cell s6">6</td><td class="score-cell s9">9</td>
+              <td class="score-cell s7">7</td><td class="score-cell s7">7</td>
+              <td class="avg-score">7.4</td>
+            </tr>
+            <tr>
+              <td class="rank">3</td>
+              <td class="company-name">Bellantoni Landscape</td>
+              <td class="score-cell s7">7</td><td class="score-cell s8">8</td><td class="score-cell s6">6</td>
+              <td class="score-cell s7">7</td><td class="score-cell s7">7</td><td class="score-cell s8">8</td>
+              <td class="score-cell s8">8</td><td class="score-cell s7">7</td>
+              <td class="avg-score">7.25</td>
+            </tr>
+            <tr>
+              <td class="rank">4</td>
+              <td class="company-name">NY Landscape Lighting</td>
+              <td class="score-cell s6">6</td><td class="score-cell s7">7</td><td class="score-cell s7">7</td>
+              <td class="score-cell s8">8</td><td class="score-cell s7">7</td><td class="score-cell s7">7</td>
+              <td class="score-cell s6">6</td><td class="score-cell s7">7</td>
+              <td class="avg-score">6.9</td>
+            </tr>
+            <tr>
+              <td class="rank">5</td>
+              <td class="company-name">Hang My Lights CT</td>
+              <td class="score-cell s6">6</td><td class="score-cell s7">7</td><td class="score-cell s5">5</td>
+              <td class="score-cell s8">8</td><td class="score-cell s7">7</td><td class="score-cell s6">6</td>
+              <td class="score-cell s6">6</td><td class="score-cell s7">7</td>
+              <td class="avg-score">6.5</td>
+            </tr>
+            <tr>
+              <td class="rank">6</td>
+              <td class="company-name">Holiday Lighting Co CT</td>
+              <td class="score-cell s8">8</td><td class="score-cell s6">6</td><td class="score-cell s5">5</td>
+              <td class="score-cell s7">7</td><td class="score-cell s7">7</td><td class="score-cell s5">5</td>
+              <td class="score-cell s7">7</td><td class="score-cell s6">6</td>
+              <td class="avg-score">6.4</td>
+            </tr>
+            <tr>
+              <td class="rank">7</td>
+              <td class="company-name" style="color:#fcd34d;">Chad Landscapes ⚠ Primary Competitor</td>
+              <td class="score-cell s6">6</td><td class="score-cell s6">6</td><td class="score-cell s5">5</td>
+              <td class="score-cell s6">6</td><td class="score-cell s6">6</td><td class="score-cell s5">5</td>
+              <td class="score-cell s6">6</td><td class="score-cell s6">6</td>
+              <td class="avg-score" style="color:#fcd34d;">5.75</td>
+            </tr>
+            <tr>
+              <td class="rank">8</td>
+              <td class="company-name">Handy Christmas</td>
+              <td class="score-cell s4">4</td><td class="score-cell s4">4</td><td class="score-cell s3">3</td>
+              <td class="score-cell s4">4</td><td class="score-cell s5">5</td><td class="score-cell s3">3</td>
+              <td class="score-cell s4">4</td><td class="score-cell s4">4</td>
+              <td class="avg-score" style="color:#fca5a5;">3.9</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- COMPETITOR PROFILES -->
+    <div class="section">
+      <span class="section-label">Individual Profiles</span>
+      <h2 class="section-title">Competitor Deep Dives</h2>
+
+      <div class="cards-grid">
+
+        <!-- #1 DECORATE WITH LIGHTS -->
+        <div class="card card--primary">
+          <div class="card__header">
+            <div>
+              <p class="card__rank">#1 — Top Scorer</p>
+              <p class="card__name">Decorate With Lights</p>
+            </div>
+            <div class="card__score-badge">
+              <span class="score-num">8.5</span>
+              <span class="score-label">/ 10</span>
+            </div>
+          </div>
+          <div class="card__body">
+            <p class="card__url">decoratewithlights.com/fairfield-ct &nbsp;|&nbsp; 914-920-7585</p>
+            <div class="card__row">
+              <span class="card__row-label">Colors</span>
+              <div class="card__row-value">
+                <div class="colors-row">
+                  <div class="color-swatch" style="background:#006747;"></div><span class="color-hex">#006747</span>
+                  <div class="color-swatch" style="background:#FAD880;"></div><span class="color-hex">#FAD880</span>
+                  <div class="color-swatch" style="background:#121212; border-color:#444;"></div><span class="color-hex">#121212</span>
+                  <div class="color-swatch" style="background:#F4F5F7; border-color:#ccc;"></div><span class="color-hex">#F4F5F7</span>
+                </div>
+              </div>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Typography</span>
+              <span class="card__row-value">Playfair Display (headlines) + Roboto (body)</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Hero Headline</span>
+              <span class="card__row-value" style="font-style:italic;">"Your White-Glove, Custom Designed, Premium Holiday Lighting Experience."</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">CTA Strategy</span>
+              <span class="card__row-value">"Request Your Complimentary Consultation" repeated 3×. Persistent sticky nav button. Form mid-page.</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Section Flow</span>
+              <span class="card__row-value">Sticky nav → Hero → 3 service tiles → 5-step process → Mid-page lead form → 12-image gallery → Testimonial carousel → Footer</span>
+            </div>
+            <hr class="card__divider" />
+            <div>
+              <span class="card__tag tag--win">✓ "White-glove" language</span>
+              <span class="card__tag tag--win">✓ Serif typography</span>
+              <span class="card__tag tag--win">✓ No pricing friction</span>
+              <span class="card__tag tag--win">✓ Lifestyle copy</span>
+              <span class="card__tag tag--win">✓ Mid-page lead capture</span>
+              <span class="card__tag tag--note">Franchise model — NY based</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- #2 SUMMER RAIN -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <p class="card__rank">#2 — Highest Trust Signals</p>
+              <p class="card__name">Summer Rain Sprinklers</p>
+            </div>
+            <div class="card__score-badge">
+              <span class="score-num">7.4</span>
+              <span class="score-label">/ 10</span>
+            </div>
+          </div>
+          <div class="card__body">
+            <p class="card__url">summerrainsprinklers.com &nbsp;|&nbsp; Greenwich, CT &nbsp;|&nbsp; Est. 1980</p>
+            <div class="card__row">
+              <span class="card__row-label">Colors</span>
+              <div class="card__row-value">
+                <div class="colors-row">
+                  <div class="color-swatch" style="background:#252565;"></div><span class="color-hex">#252565</span>
+                  <div class="color-swatch" style="background:#FFFFFF; border-color:#ccc;"></div><span class="color-hex">#FFFFFF</span>
+                </div>
+              </div>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Best Feature</span>
+              <span class="card__row-value">10-question FAQ — the best objection-handling content of any competitor</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Trust Stack</span>
+              <span class="card__row-value">45 years • 120 employees • 4 CT licenses • BBB accredited • National ranking • Named VP expert • Bucket trucks</span>
+            </div>
+            <hr class="card__divider" />
+            <div>
+              <span class="card__tag tag--win">✓ Deepest trust stack</span>
+              <span class="card__tag tag--win">✓ Best FAQ content</span>
+              <span class="card__tag tag--gap">✗ Irrigation company — no Christmas passion</span>
+              <span class="card__tag tag--gap">✗ No emotional copy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- #3 BELLANTONI -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <p class="card__rank">#3 — Most Detailed Process</p>
+              <p class="card__name">Bellantoni Landscape</p>
+            </div>
+            <div class="card__score-badge">
+              <span class="score-num">7.25</span>
+              <span class="score-label">/ 10</span>
+            </div>
+          </div>
+          <div class="card__body">
+            <p class="card__url">bellantonilandscape.com &nbsp;|&nbsp; Est. 1963</p>
+            <div class="card__row">
+              <span class="card__row-label">Colors</span>
+              <div class="card__row-value">
+                <div class="colors-row">
+                  <div class="color-swatch" style="background:#2F4F2F;"></div><span class="color-hex">#2F4F2F</span>
+                  <div class="color-swatch" style="background:#C8A25F;"></div><span class="color-hex">#C8A25F</span>
+                  <div class="color-swatch" style="background:#191818; border-color:#444;"></div><span class="color-hex">#191818</span>
+                </div>
+              </div>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Unique Feature</span>
+              <span class="card__row-value">Bluetooth-enabled color-changing LED — phone-app control. Only competitor with this.</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Best Feature</span>
+              <span class="card__row-value">8-step documented installation process — most detailed of all competitors</span>
+            </div>
+            <hr class="card__divider" />
+            <div>
+              <span class="card__tag tag--win">✓ 60+ year heritage</span>
+              <span class="card__tag tag--win">✓ BBB A+</span>
+              <span class="card__tag tag--win">✓ Smart tech (Bluetooth LED)</span>
+              <span class="card__tag tag--gap">✗ No testimonials on holiday page</span>
+              <span class="card__tag tag--gap">✗ Secondary service</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- #4 NY LANDSCAPE LIGHTING -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <p class="card__rank">#4 — Best CTA Language</p>
+              <p class="card__name">NY Landscape Lighting</p>
+            </div>
+            <div class="card__score-badge">
+              <span class="score-num">6.9</span>
+              <span class="score-label">/ 10</span>
+            </div>
+          </div>
+          <div class="card__body">
+            <p class="card__url">nylandscapelighting.com &nbsp;|&nbsp; Mt Kisco, NY → Fairfield County</p>
+            <div class="card__row">
+              <span class="card__row-label">Best CTAs</span>
+              <span class="card__row-value" style="font-style:italic;">"Start My Lighting Project" / "Make My Home Sparkle" — most emotionally resonant of all competitors</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Unique Feature</span>
+              <span class="card__row-value">HouseCallPro online booking — only competitor with instant digital booking</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Warranty</span>
+              <span class="card__row-value">Lifetime transformer warranty + 20-year connection warranty</span>
+            </div>
+            <hr class="card__divider" />
+            <div>
+              <span class="card__tag tag--win">✓ Instant online booking</span>
+              <span class="card__tag tag--win">✓ Permanent lighting upsell</span>
+              <span class="card__tag tag--gap">✗ Uninspiring visual design</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- #5 HANG MY LIGHTS CT -->
+        <div class="card">
+          <div class="card__header">
+            <div>
+              <p class="card__rank">#5 — Only Transparent Pricing</p>
+              <p class="card__name">Hang My Lights CT</p>
+            </div>
+            <div class="card__score-badge">
+              <span class="score-num">6.5</span>
+              <span class="score-label">/ 10</span>
+            </div>
+          </div>
+          <div class="card__body">
+            <p class="card__url">hangmylightsct.com &nbsp;|&nbsp; (203) 535-4244</p>
+            <div class="card__row">
+              <span class="card__row-label">Colors</span>
+              <div class="card__row-value">
+                <div class="colors-row">
+                  <div class="color-swatch" style="background:#111; border-color:#444;"></div><span class="color-hex">Dark BG</span>
+                  <div class="color-swatch" style="background:#B30000;"></div><span class="color-hex">#B30000</span>
+                  <div class="color-swatch" style="background:#FBDE2A;"></div><span class="color-hex">#FBDE2A</span>
+                </div>
+              </div>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Pricing (Public)</span>
+              <span class="card__row-value">Standard $499 · Silver $799 · Gold $1,199 starting</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Process</span>
+              <span class="card__row-value" style="font-style:italic;">"Quote → Schedule → Relax" — simple and memorable</span>
+            </div>
+            <hr class="card__divider" />
+            <div>
+              <span class="card__tag tag--win">✓ Only one showing prices</span>
+              <span class="card__tag tag--win">✓ Clear 3-step process</span>
+              <span class="card__tag tag--gap">✗ Low price anchor ($499) — mid-market</span>
+              <span class="card__tag tag--gap">✗ "HOliday" typo in hero</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- #6 CHAD LANDSCAPES -->
+        <div class="card" style="border-color:rgba(252,211,77,0.3);">
+          <div class="card__header" style="background:rgba(252,211,77,0.05);">
+            <div>
+              <p class="card__rank" style="color:#fcd34d;">#7 — Primary Local Competitor ⚠</p>
+              <p class="card__name">Chad Landscapes</p>
+            </div>
+            <div class="card__score-badge" style="border-color:rgba(252,211,77,0.3);">
+              <span class="score-num" style="color:#fcd34d;">5.75</span>
+              <span class="score-label">/ 10</span>
+            </div>
+          </div>
+          <div class="card__body">
+            <p class="card__url">chadlandscapes.com/holiday-lighting/ &nbsp;|&nbsp; 203-673-2051 &nbsp;|&nbsp; CT License 0641797</p>
+            <div class="card__row">
+              <span class="card__row-label">Colors (Holiday)</span>
+              <div class="card__row-value">
+                <div class="colors-row">
+                  <div class="color-swatch" style="background:#1D1D1D; border-color:#444;"></div><span class="color-hex">#1D1D1D</span>
+                  <div class="color-swatch" style="background:#8962BD;"></div><span class="color-hex">#8962BD (❌ off-brand)</span>
+                </div>
+              </div>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">Hero Headline</span>
+              <span class="card__row-value" style="font-style:italic;">"Have The Most Wonderful Christmas Lighting Ever!"</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">What Works</span>
+              <span class="card__row-value">Real property addresses in gallery = hyper-local social proof. CT license visible on main site.</span>
+            </div>
+            <div class="card__row">
+              <span class="card__row-label">What's Missing</span>
+              <span class="card__row-value">No testimonials on holiday page, no insurance badge, no FAQ, no warranty language, no pricing anchor, no commercial-grade callout</span>
+            </div>
+            <hr class="card__divider" />
+            <div>
+              <span class="card__tag tag--win">✓ Established local brand</span>
+              <span class="card__tag tag--win">✓ CT license visible</span>
+              <span class="card__tag tag--gap">✗ Purple accent is off-brand</span>
+              <span class="card__tag tag--gap">✗ Holiday page is an afterthought</span>
+              <span class="card__tag tag--gap">✗ No testimonials on holiday page</span>
+              <span class="card__tag tag--gap">✗ No FAQ, no warranty language</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PATTERNS -->
+    <div class="section">
+      <span class="section-label">What Separates Elite from Average</span>
+      <h2 class="section-title">5 Patterns All Top Sites Share</h2>
+
+      <div class="patterns-grid">
+        <div class="pattern-card">
+          <div class="pattern-card__num">01</div>
+          <h3 class="pattern-card__title">They Sell the Outcome, Not the Service</h3>
+          <p class="pattern-card__body">Top sites: <em>"Come home to a Winter Wonderland." / "Make your home sparkle."</em><br /><br />Average sites: <em>"We install Christmas lights." / "Christmas light installation Fairfield County CT."</em></p>
+          <p class="pattern-card__lesson">→ Sell the transformation and feeling, not the labor.</p>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card__num">02</div>
+          <h3 class="pattern-card__title">Mid-Page Lead Capture</h3>
+          <p class="pattern-card__body">Every top site places a quote form or CTA within the scrollable homepage body — not hidden in the footer or a separate contact page. The CTA comes to the user.</p>
+          <p class="pattern-card__lesson">→ Don't make customers hunt for how to reach you.</p>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card__num">03</div>
+          <h3 class="pattern-card__title">A Documented 3–8 Step Process</h3>
+          <p class="pattern-card__body">Every top site shows their process: consultation → design → install → maintenance → removal → storage. This removes anxiety about "strangers on my roof."</p>
+          <p class="pattern-card__lesson">→ Show how you work, not just what you do.</p>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card__num">04</div>
+          <h3 class="pattern-card__title">Layered Trust Stacking</h3>
+          <p class="pattern-card__body">Top sites combine: licensed + insured + years in business + warranty + named team + certification. Average sites say "insured" buried in a footer line.</p>
+          <p class="pattern-card__lesson">→ Stack trust signals in a dedicated visible section.</p>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card__num">05</div>
+          <h3 class="pattern-card__title">Professional Dusk/Evening Photography</h3>
+          <p class="pattern-card__body">Every top site leads with blue-hour photography of illuminated homes. Dusk shots are dramatically more emotional and aspirational than daytime utility photos.</p>
+          <p class="pattern-card__lesson">→ Blue-hour photography is non-negotiable for premium positioning.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARKET GAPS -->
+    <div class="section">
+      <span class="section-label">Your Competitive Advantage</span>
+      <h2 class="section-title">Market Gaps — Opportunities for Ornate</h2>
+
+      <div class="gaps-list">
+        <div class="gap-item">
+          <span class="gap-item__num">1</span>
+          <p class="gap-item__text"><strong>No one owns luxury residential end-to-end locally.</strong> Decorate With Lights is closest but is a NY franchise. A Fairfield County-native premium brand has a completely open lane.</p>
+        </div>
+        <div class="gap-item">
+          <span class="gap-item__num">2</span>
+          <p class="gap-item__text"><strong>No competitor positions above mid-market.</strong> Hang My Lights anchors the market at $499. The $2,000–$8,000+ estate market is completely unaddressed visually by anyone.</p>
+        </div>
+        <div class="gap-item">
+          <span class="gap-item__num">3</span>
+          <p class="gap-item__text"><strong>"Ornate" is the only name that signals craftsmanship.</strong> Every competitor is a landscaping company doing Christmas lighting on the side. Ornate Christmas Lighting is the only brand name built around the service and quality level itself.</p>
+        </div>
+        <div class="gap-item">
+          <span class="gap-item__num">4</span>
+          <p class="gap-item__text"><strong>FAQ/objection-handling gap.</strong> Only Summer Rain has a comprehensive FAQ. Most competitors leave common objections (who owns the lights? what if something breaks?) completely unanswered.</p>
+        </div>
+        <div class="gap-item">
+          <span class="gap-item__num">5</span>
+          <p class="gap-item__text"><strong>No before/after gallery.</strong> Every site shows "after" photos only. A properly executed before/after section would be immediately category-defining and emotionally powerful.</p>
+        </div>
+        <div class="gap-item">
+          <span class="gap-item__num">6</span>
+          <p class="gap-item__text"><strong>No live Google review widget on any homepage.</strong> Nobody prominently shows a star rating count in their hero section — a massive missed trust opportunity across the entire competitive set.</p>
+        </div>
+        <div class="gap-item">
+          <span class="gap-item__num">7</span>
+          <p class="gap-item__text"><strong>No video content.</strong> Zero competitors use hero video, drone footage, or time-lapse installation videos. A 30-second hero video of a crew transforming a Westport Colonial at dusk would be completely category-defining.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

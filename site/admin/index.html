@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | Ornate Christmas Lighting</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png" />
+
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--black);
+      padding: 2rem;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: var(--green-dark);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      text-align: center;
+    }
+
+    .login-logo {
+      height: 90px;
+      width: auto;
+      margin: 0 auto 1.5rem;
+      object-fit: cover;
+      object-position: top;
+      clip-path: inset(0 0 27% 0);
+    }
+
+    .login-title {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      color: var(--warm-white);
+      margin-bottom: 0.4rem;
+    }
+
+    .login-sub {
+      font-size: 0.85rem;
+      color: rgba(245,240,232,0.5);
+      margin-bottom: 2rem;
+    }
+
+    .login-error {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: #fca5a5;
+      margin-bottom: 1.25rem;
+      display: none;
+    }
+
+    .login-form .form__group {
+      text-align: left;
+      margin-bottom: 1.25rem;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 0.95rem;
+      font-size: 0.95rem;
+      margin-top: 0.25rem;
+      justify-content: center;
+    }
+
+    .login-back {
+      display: block;
+      margin-top: 1.5rem;
+      font-size: 0.82rem;
+      color: rgba(245,240,232,0.35);
+      transition: color 0.2s;
+    }
+    .login-back:hover { color: rgba(245,240,232,0.6); }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <img src="../assets/images/logo.png" alt="Ornate Christmas Lighting" class="login-logo" />
+    <h1 class="login-title">Admin Portal</h1>
+    <p class="login-sub">Ornate Christmas Lighting — Staff Access Only</p>
+
+    <div class="login-error" id="loginError"></div>
+
+    <form class="login-form" id="loginForm" novalidate>
+      <div class="form__group">
+        <label class="form__label" for="loginEmail">Email</label>
+        <input class="form__input" type="email" id="loginEmail" name="email" required
+               placeholder="admin@example.com" autocomplete="email" />
+      </div>
+      <div class="form__group">
+        <label class="form__label" for="loginPassword">Password</label>
+        <input class="form__input" type="password" id="loginPassword" name="password" required
+               placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn btn--gold login-btn" id="loginBtn">
+        Sign In
+      </button>
+    </form>
+
+    <a href="../index.html" class="login-back">← Back to main site</a>
+  </div>
+
+  <script>
+    // ⚠️ SETUP REQUIRED: Replace with your Supabase project values
+    const SUPABASE_URL = 'https://ebhwujdnrumixcbxaiqv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImViaHd1amRucnVtaXhjYnhhaXF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MjI1MTUsImV4cCI6MjA5MDQ5ODUxNX0.jniHETwFaeA8AtyQIJYlGiA4-NQ69go9MYC3h-mcrNM';
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const loginError = document.getElementById('loginError');
+
+      loginError.style.display = 'none';
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Signing in...';
+
+      try {
+        const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+          throw new Error(data.error_description || data.msg || 'Invalid credentials.');
+        }
+
+        // Store session
+        sessionStorage.setItem('ornate_session', JSON.stringify({
+          access_token: data.access_token,
+          user: data.user
+        }));
+
+        window.location.href = 'dashboard.html';
+
+      } catch (err) {
+        loginError.textContent = err.message || 'Login failed. Please try again.';
+        loginError.style.display = 'block';
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign In';
+      }
+    });
+
+    // If already logged in, redirect
+    const existing = sessionStorage.getItem('ornate_session');
+    if (existing) {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>

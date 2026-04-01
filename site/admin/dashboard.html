@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Ornate Christmas Lighting Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #0D0D0D;
+      --green-dark: #142E21;
+      --green:      #1B3A2A;
+      --gold:       #C9A84C;
+      --gold-light: #E2C06A;
+      --cream:      #FAF6EE;
+      --warm-white: #F5F0E8;
+      --charcoal:   #1A1A1A;
+      --gray:       #6B7280;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans:  'Inter', system-ui, sans-serif;
+      --radius:     8px;
+      --transition: 0.2s ease;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--black);
+      color: var(--warm-white);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: 240px;
+      background: var(--green-dark);
+      border-right: 1px solid rgba(201,168,76,0.15);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .sidebar__logo {
+      padding: 1.5rem 1.25rem;
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+    }
+
+    .sidebar__logo img {
+      height: 44px;
+      width: auto;
+    }
+
+    .sidebar__logo-text {
+      font-size: 0.7rem;
+      color: rgba(245,240,232,0.4);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 0.4rem;
+    }
+
+    .sidebar__nav {
+      flex: 1;
+      padding: 1.5rem 0;
+      overflow-y: auto;
+    }
+
+    .sidebar__nav-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.3);
+      padding: 0 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar__link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: rgba(245,240,232,0.65);
+      text-decoration: none;
+      transition: all var(--transition);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      font-family: var(--font-sans);
+    }
+
+    .sidebar__link:hover, .sidebar__link.active {
+      background: rgba(201,168,76,0.1);
+      color: var(--warm-white);
+    }
+
+    .sidebar__link.active {
+      color: var(--gold);
+      border-left: 2px solid var(--gold);
+    }
+
+    .sidebar__link i { font-size: 1.1rem; }
+
+    .sidebar__badge {
+      margin-left: auto;
+      background: var(--gold);
+      color: var(--black);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .sidebar__footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid rgba(201,168,76,0.12);
+    }
+
+    .sidebar__user {
+      font-size: 0.8rem;
+      color: rgba(245,240,232,0.5);
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar__logout {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: rgba(245,240,232,0.4);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font-sans);
+      transition: color var(--transition);
+      padding: 0;
+    }
+    .sidebar__logout:hover { color: var(--warm-white); }
+
+    /* MAIN CONTENT */
+    .main { margin-left: 240px; min-height: 100vh; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      background: rgba(13,13,13,0.8);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar__title { font-family: var(--font-serif); font-size: 1.4rem; color: var(--warm-white); }
+    .topbar__actions { display: flex; gap: 0.75rem; }
+
+    .content { padding: 2rem; }
+
+    /* STAT CARDS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--green-dark);
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+
+    .stat-card__label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.45);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card__value {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-card__sub { font-size: 0.78rem; color: rgba(245,240,232,0.4); }
+
+    /* PANELS */
+    .panel {
+      background: var(--green-dark);
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .panel__title { font-size: 0.9rem; font-weight: 700; color: var(--warm-white); }
+    .panel__body { padding: 0; }
+
+    /* TABLE */
+    .table { width: 100%; border-collapse: collapse; }
+
+    .table th {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.4);
+      padding: 0.85rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      white-space: nowrap;
+    }
+
+    .table td {
+      padding: 1rem 1.25rem;
+      font-size: 0.88rem;
+      color: rgba(245,240,232,0.8);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+
+    .table tbody tr:hover { background: rgba(201,168,76,0.04); cursor: pointer; }
+    .table tbody tr:last-child td { border-bottom: none; }
+
+    /* STATUS BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .badge--new        { background: rgba(59,130,246,0.15);  color: #93c5fd;  border: 1px solid rgba(59,130,246,0.25); }
+    .badge--contacted  { background: rgba(245,158,11,0.15);  color: #fcd34d;  border: 1px solid rgba(245,158,11,0.25); }
+    .badge--quoted     { background: rgba(139,92,246,0.15);  color: #c4b5fd;  border: 1px solid rgba(139,92,246,0.25); }
+    .badge--accepted   { background: rgba(34,197,94,0.15);   color: #86efac;  border: 1px solid rgba(34,197,94,0.25); }
+    .badge--declined   { background: rgba(239,68,68,0.15);   color: #fca5a5;  border: 1px solid rgba(239,68,68,0.25); }
+    .badge--scheduled  { background: rgba(20,184,166,0.15);  color: #5eead4;  border: 1px solid rgba(20,184,166,0.25); }
+    .badge--completed  { background: rgba(201,168,76,0.15);  color: var(--gold); border: 1px solid rgba(201,168,76,0.25); }
+    .badge--in-progress{ background: rgba(249,115,22,0.15);  color: #fdba74;  border: 1px solid rgba(249,115,22,0.25); }
+    .badge--on-hold    { background: rgba(107,114,128,0.2);  color: #9ca3af;  border: 1px solid rgba(107,114,128,0.3); }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: #1a2f22;
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+
+    .modal__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+      position: sticky;
+      top: 0;
+      background: #1a2f22;
+      z-index: 1;
+    }
+
+    .modal__title { font-family: var(--font-serif); font-size: 1.3rem; color: var(--warm-white); }
+
+    .modal__close {
+      background: none;
+      border: none;
+      color: rgba(245,240,232,0.5);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      transition: color var(--transition);
+    }
+    .modal__close:hover { color: var(--warm-white); }
+
+    .modal__body { padding: 1.5rem; }
+
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+
+    .detail-item label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.35);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-item p { font-size: 0.9rem; color: var(--warm-white); }
+    .detail-item a { color: var(--gold); text-decoration: none; }
+
+    .detail-section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 1.5rem 0 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+
+    /* FORM ELEMENTS in modal */
+    .modal-input, .modal-select, .modal-textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: var(--radius);
+      padding: 0.7rem 0.9rem;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      color: var(--warm-white);
+      transition: border-color 0.2s;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-input:focus, .modal-select:focus, .modal-textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .modal-select option { background: #1a2f22; }
+    .modal-textarea { resize: vertical; min-height: 80px; }
+
+    .modal-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.45);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .modal-form-group { margin-bottom: 1rem; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+    /* PHOTO UPLOAD */
+    .photo-upload-area {
+      border: 2px dashed rgba(201,168,76,0.25);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .photo-upload-area:hover { border-color: rgba(201,168,76,0.5); }
+    .photo-upload-area i { font-size: 2rem; color: rgba(201,168,76,0.4); display: block; margin-bottom: 0.5rem; }
+    .photo-upload-area p { font-size: 0.85rem; color: rgba(245,240,232,0.4); }
+
+    .photos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .photo-thumb { aspect-ratio: 1; border-radius: 6px; overflow: hidden; position: relative; }
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .photo-thumb__del {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 22px; height: 22px;
+      background: rgba(239,68,68,0.8);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .photo-thumb:hover .photo-thumb__del { opacity: 1; }
+
+    /* FILE ITEMS */
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201,168,76,0.1);
+      border-radius: 6px;
+      margin-bottom: 0.4rem;
+    }
+    .file-item i { font-size: 1.3rem; color: rgba(201,168,76,0.5); flex-shrink: 0; }
+    .file-item__name { flex: 1; font-size: 0.83rem; color: var(--warm-white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-item__actions { display: flex; gap: 0.35rem; flex-shrink: 0; }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(245,240,232,0.4);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab-btn:hover { color: var(--warm-white); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* BUTTONS */
+    .btn-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+    }
+
+    .btn-gold { background: var(--gold); color: var(--black); }
+    .btn-gold:hover { background: var(--gold-light); }
+    .btn-outline { background: transparent; color: var(--warm-white); border: 1px solid rgba(245,240,232,0.2); }
+    .btn-outline:hover { border-color: var(--warm-white); }
+    .btn-danger { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+    .btn-danger:hover { background: rgba(239,68,68,0.25); }
+
+    .empty-state { text-align: center; padding: 4rem 2rem; color: rgba(245,240,232,0.35); }
+    .empty-state i { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+
+    .loading-state { text-align: center; padding: 3rem; color: rgba(245,240,232,0.4); font-size: 0.9rem; }
+
+    /* VIEWS */
+    #view-quotes   { display: block; }
+    #view-jobs     { display: none; }
+    #view-admins   { display: none; }
+    #view-calendar { display: none; }
+
+    /* CALENDAR */
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .calendar-month-title {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      color: var(--warm-white);
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .cal-header-cell {
+      text-align: center;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.3);
+      padding: 0.5rem 0;
+    }
+    .cal-day {
+      background: var(--green-dark);
+      border: 1px solid rgba(201,168,76,0.08);
+      border-radius: 6px;
+      padding: 0.5rem;
+      min-height: 90px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .cal-day:hover { border-color: rgba(201,168,76,0.3); }
+    .cal-day.other-month { opacity: 0.2; pointer-events: none; }
+    .cal-day.today { border-color: rgba(201,168,76,0.5); }
+    .cal-day__num {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(245,240,232,0.45);
+      margin-bottom: 0.35rem;
+    }
+    .cal-day.today .cal-day__num { color: var(--gold); font-weight: 700; }
+    .cal-job-chip {
+      display: block;
+      font-size: 0.67rem;
+      background: rgba(201,168,76,0.12);
+      color: #e2c06a;
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 3px;
+      padding: 0.15rem 0.4rem;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cal-job-chip:hover { background: rgba(201,168,76,0.22); }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 200px; }
+      .main { margin-left: 200px; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .cal-grid { gap: 2px; }
+      .cal-day { min-height: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <img src="../assets/images/logo.png" alt="Ornate Christmas Lighting" />
+      <p class="sidebar__logo-text">Admin Portal</p>
+    </div>
+
+    <nav class="sidebar__nav">
+      <p class="sidebar__nav-label">Manage</p>
+      <button class="sidebar__link active" onclick="showView('quotes')" id="nav-quotes">
+        <i class="ph ph-inbox"></i> Quote Inbox
+        <span class="sidebar__badge" id="new-count">0</span>
+      </button>
+      <button class="sidebar__link" onclick="showView('jobs')" id="nav-jobs">
+        <i class="ph ph-folder-open"></i> Job Folders
+      </button>
+      <button class="sidebar__link" onclick="showView('calendar')" id="nav-calendar">
+        <i class="ph ph-calendar"></i> Calendar
+      </button>
+      <hr style="border:none; border-top:1px solid rgba(201,168,76,0.1); margin:0.75rem 1.25rem;" />
+      <p class="sidebar__nav-label" style="margin-top:0.75rem;">Settings</p>
+      <button class="sidebar__link" onclick="showView('admins')" id="nav-admins">
+        <i class="ph ph-users"></i> Admin Users
+      </button>
+    </nav>
+
+    <div class="sidebar__footer">
+      <p class="sidebar__user" id="userEmail">Loading...</p>
+      <button class="sidebar__logout" onclick="logout()">
+        <i class="ph ph-sign-out"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="topbar">
+      <h1 class="topbar__title" id="topbarTitle">Quote Inbox</h1>
+      <div class="topbar__actions">
+        <button class="btn-sm btn-outline" onclick="refreshData()">
+          <i class="ph ph-arrows-clockwise"></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- STATS -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <p class="stat-card__label">Total Quotes</p>
+          <p class="stat-card__value" id="stat-total">—</p>
+          <p class="stat-card__sub">All time</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-card__label">New</p>
+          <p class="stat-card__value" id="stat-new">—</p>
+          <p class="stat-card__sub">Awaiting contact</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-card__label">Active Jobs</p>
+          <p class="stat-card__value" id="stat-jobs">—</p>
+          <p class="stat-card__sub">In progress / scheduled</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-card__label">Completed</p>
+          <p class="stat-card__value" id="stat-completed">—</p>
+          <p class="stat-card__sub">This season</p>
+        </div>
+      </div>
+
+      <!-- QUOTE INBOX VIEW -->
+      <div id="view-quotes">
+        <div class="panel">
+          <div class="panel__header">
+            <p class="panel__title">All Quote Requests</p>
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+              <select class="modal-select" id="quotesFilter" onchange="filterQuotes()" style="width:auto; margin:0; padding:0.4rem 0.8rem; font-size:0.8rem;">
+                <option value="">All Statuses</option>
+                <option value="new">New</option>
+                <option value="contacted">Contacted</option>
+                <option value="quoted">Quoted</option>
+                <option value="accepted">Accepted</option>
+                <option value="declined">Declined</option>
+              </select>
+            </div>
+          </div>
+          <div class="panel__body">
+            <div id="quotesLoading" class="loading-state">Loading quotes...</div>
+            <div id="quotesEmpty" class="empty-state" style="display:none;">
+              <i class="ph ph-inbox"></i>
+              <p>No quote requests yet.</p>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="table" id="quotesTable" style="display:none;">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>City</th>
+                    <th>Service</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="quotesBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JOBS VIEW -->
+      <div id="view-jobs">
+        <div class="panel">
+          <div class="panel__header">
+            <p class="panel__title">Job Folders</p>
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <button class="btn-sm btn-danger" id="resetSeasonBtn" onclick="resetSeasonJobs()" style="display:none;">
+                <i class="ph ph-recycle"></i> Reset Season
+              </button>
+              <button class="btn-sm btn-gold" onclick="openNewJobModal()">
+                <i class="ph ph-plus"></i> New Job
+              </button>
+              <select class="modal-select" id="jobsFilter" onchange="filterJobs()" style="width:auto; margin:0; padding:0.4rem 0.8rem; font-size:0.8rem;">
+                <option value="">All Statuses</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="on-hold">On Hold</option>
+              </select>
+            </div>
+          </div>
+          <div class="panel__body">
+            <div id="jobsLoading" class="loading-state">Loading jobs...</div>
+            <div id="jobsEmpty" class="empty-state" style="display:none;">
+              <i class="ph ph-folder-open"></i>
+              <p>No jobs yet. Create one manually or accept a quote.</p>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="table" id="jobsTable" style="display:none;">
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Address</th>
+                    <th>Service</th>
+                    <th>Price</th>
+                    <th>Install Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="jobsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN USERS VIEW -->
+      <div id="view-admins">
+        <div class="panel">
+          <div class="panel__header">
+            <p class="panel__title">Admin Users</p>
+            <button class="btn-sm btn-gold" onclick="openAddAdminModal()">
+              <i class="ph ph-plus"></i> Add Admin
+            </button>
+          </div>
+          <div class="panel__body">
+            <div id="adminsLoading" class="loading-state">Loading admins...</div>
+            <div id="adminsEmpty" class="empty-state" style="display:none;">
+              <i class="ph ph-users"></i>
+              <p>No additional admins.</p>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="table" id="adminsTable" style="display:none;">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Added</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CALENDAR VIEW -->
+      <div id="view-calendar">
+        <div class="calendar-nav">
+          <button class="btn-sm btn-outline" onclick="calNavPrev()">
+            <i class="ph ph-caret-left"></i> Prev
+          </button>
+          <h2 class="calendar-month-title" id="calMonthTitle">—</h2>
+          <button class="btn-sm btn-outline" onclick="calNavNext()">
+            Next <i class="ph ph-caret-right"></i>
+          </button>
+        </div>
+        <div class="panel">
+          <div class="panel__body" style="padding:1rem;">
+            <div class="cal-grid" id="calGrid">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </div>
+        <p style="font-size:0.78rem; color:rgba(245,240,232,0.3); margin-top:1rem; text-align:center;">
+          Jobs appear on their install date. Click any day to view or assign jobs.
+        </p>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+
+  <!-- QUOTE DETAIL MODAL -->
+  <div class="modal-overlay" id="quoteModal">
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title" id="quoteModalTitle">Quote Details</h2>
+        <button class="modal__close" onclick="closeModal('quoteModal')">×</button>
+      </div>
+      <div class="modal__body" id="quoteModalBody"></div>
+    </div>
+  </div>
+
+  <!-- JOB DETAIL MODAL -->
+  <div class="modal-overlay" id="jobModal">
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title" id="jobModalTitle">Job Folder</h2>
+        <button class="modal__close" onclick="closeModal('jobModal')">×</button>
+      </div>
+      <div class="modal__body" id="jobModalBody"></div>
+    </div>
+  </div>
+
+  <!-- NEW JOB MODAL -->
+  <div class="modal-overlay" id="newJobModal">
+    <div class="modal">
+      <div class="modal__header">
+        <h2 class="modal__title">Create New Job</h2>
+        <button class="modal__close" onclick="closeModal('newJobModal')">×</button>
+      </div>
+      <div class="modal__body">
+        <div class="form-row">
+          <div class="modal-form-group">
+            <label class="modal-label">First Name *</label>
+            <input class="modal-input" type="text" id="nj-first" placeholder="Jane" style="margin:0;" />
+          </div>
+          <div class="modal-form-group">
+            <label class="modal-label">Last Name *</label>
+            <input class="modal-input" type="text" id="nj-last" placeholder="Smith" style="margin:0;" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="modal-form-group">
+            <label class="modal-label">Phone</label>
+            <input class="modal-input" type="tel" id="nj-phone" placeholder="(203) 555-0100" style="margin:0;" />
+          </div>
+          <div class="modal-form-group">
+            <label class="modal-label">Email</label>
+            <input class="modal-input" type="email" id="nj-email" placeholder="jane@example.com" style="margin:0;" />
+          </div>
+        </div>
+        <div class="modal-form-group">
+          <label class="modal-label">Address *</label>
+          <input class="modal-input" type="text" id="nj-address" placeholder="123 Maple Street" style="margin:0;" />
+        </div>
+        <div class="form-row">
+          <div class="modal-form-group">
+            <label class="modal-label">City / Town *</label>
+            <input class="modal-input" type="text" id="nj-city" placeholder="Greenwich" style="margin:0;" />
+          </div>
+          <div class="modal-form-group">
+            <label class="modal-label">Service</label>
+            <select class="modal-select" id="nj-service" style="margin:0;">
+              <option value="christmas">Christmas Lighting</option>
+              <option value="wedding">Wedding / Events</option>
+              <option value="business">Small Business</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="modal-form-group">
+            <label class="modal-label">Status</label>
+            <select class="modal-select" id="nj-status" style="margin:0;">
+              <option value="scheduled">Scheduled</option>
+              <option value="in-progress">In Progress</option>
+              <option value="on-hold">On Hold</option>
+            </select>
+          </div>
+          <div class="modal-form-group">
+            <label class="modal-label">Invoice Amount ($)</label>
+            <input class="modal-input" type="number" id="nj-price" placeholder="0.00" style="margin:0;" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="modal-form-group">
+            <label class="modal-label">Install Date</label>
+            <input class="modal-input" type="date" id="nj-install" style="margin:0;" />
+          </div>
+          <div class="modal-form-group">
+            <label class="modal-label">Removal Date</label>
+            <input class="modal-input" type="date" id="nj-removal" style="margin:0;" />
+          </div>
+        </div>
+        <div class="modal-form-group">
+          <label class="modal-label">Time Slot</label>
+          <select class="modal-select" id="nj-time" style="margin:0;">
+            <option value="TBD">TBD</option>
+            <option value="Morning">Morning</option>
+            <option value="Afternoon">Afternoon</option>
+            <option value="Full Day">Full Day</option>
+          </select>
+        </div>
+        <div class="modal-form-group">
+          <label class="modal-label">Notes</label>
+          <textarea class="modal-textarea" id="nj-notes" placeholder="Any initial notes about this job..."></textarea>
+        </div>
+        <div style="display:flex; gap:0.75rem; justify-content:flex-end; margin-top:0.5rem;">
+          <button class="btn-sm btn-outline" onclick="closeModal('newJobModal')">Cancel</button>
+          <button class="btn-sm btn-gold" onclick="createManualJob()">
+            <i class="ph ph-folder-plus"></i> Create Job Folder
+          </button>
+        </div>
+        <p id="newJobError" style="display:none; color:#fca5a5; font-size:0.82rem; margin-top:0.75rem; text-align:center;"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDAR DAY MODAL -->
+  <div class="modal-overlay" id="calDayModal">
+    <div class="modal" style="max-width:520px;">
+      <div class="modal__header">
+        <h2 class="modal__title" id="calDayTitle">—</h2>
+        <button class="modal__close" onclick="closeModal('calDayModal')">×</button>
+      </div>
+      <div class="modal__body" id="calDayBody"></div>
+    </div>
+  </div>
+
+  <!-- ADD ADMIN MODAL -->
+  <div class="modal-overlay" id="addAdminModal">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal__header">
+        <h2 class="modal__title">Add Admin User</h2>
+        <button class="modal__close" onclick="closeModal('addAdminModal')">×</button>
+      </div>
+      <div class="modal__body">
+        <p style="font-size:0.85rem; color:rgba(245,240,232,0.55); margin-bottom:1.25rem;">
+          The new admin will receive an email invitation to set up their password via Supabase Auth.
+        </p>
+        <div class="modal-form-group">
+          <label class="modal-label">Email Address</label>
+          <input class="modal-input" type="email" id="newAdminEmail" placeholder="admin@example.com" />
+        </div>
+        <div style="display:flex; gap:0.75rem; justify-content:flex-end; margin-top:1rem;">
+          <button class="btn-sm btn-outline" onclick="closeModal('addAdminModal')">Cancel</button>
+          <button class="btn-sm btn-gold" onclick="inviteAdmin()">Send Invitation</button>
+        </div>
+        <p id="addAdminMsg" style="display:none; margin-top:0.75rem; font-size:0.82rem; text-align:center;"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://ebhwujdnrumixcbxaiqv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImViaHd1amRucnVtaXhjYnhhaXF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MjI1MTUsImV4cCI6MjA5MDQ5ODUxNX0.jniHETwFaeA8AtyQIJYlGiA4-NQ69go9MYC3h-mcrNM';
+
+    let SESSION = null;
+    let allQuotes = [];
+    let allJobs = [];
+    let calYear = new Date().getFullYear();
+    let calMonth = new Date().getMonth(); // 0-indexed
+
+    // ─── AUTH GUARD ───────────────────────────────────────────
+    function checkAuth() {
+      const raw = sessionStorage.getItem('ornate_session');
+      if (!raw) { window.location.href = 'index.html'; return false; }
+      SESSION = JSON.parse(raw);
+      document.getElementById('userEmail').textContent = SESSION.user?.email || 'Admin';
+      return true;
+    }
+
+    function logout() {
+      sessionStorage.removeItem('ornate_session');
+      window.location.href = 'index.html';
+    }
+
+    // ─── SUPABASE HELPERS ─────────────────────────────────────
+    function authHeaders() {
+      return {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SESSION.access_token}`
+      };
+    }
+
+    async function dbGet(table, params = '') {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}&order=created_at.desc`, {
+        headers: { ...authHeaders(), 'Accept': 'application/json' }
+      });
+      if (!r.ok) throw new Error(await r.text());
+      return r.json();
+    }
+
+    async function dbPatch(table, id, body) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders(), 'Prefer': 'return=minimal' },
+        body: JSON.stringify(body)
+      });
+      if (!r.ok) throw new Error(await r.text());
+    }
+
+    async function dbPatchWhere(table, filter, body) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${filter}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders(), 'Prefer': 'return=minimal' },
+        body: JSON.stringify(body)
+      });
+      if (!r.ok) throw new Error(await r.text());
+    }
+
+    async function dbInsert(table, body) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+        method: 'POST',
+        headers: { ...authHeaders(), 'Prefer': 'return=representation' },
+        body: JSON.stringify(body)
+      });
+      if (!r.ok) throw new Error(await r.text());
+      return r.json();
+    }
+
+    // ─── VIEW MANAGEMENT ──────────────────────────────────────
+    function showView(view) {
+      ['quotes', 'jobs', 'admins', 'calendar'].forEach(v => {
+        document.getElementById(`view-${v}`).style.display = 'none';
+        document.getElementById(`nav-${v}`).classList.remove('active');
+      });
+      document.getElementById(`view-${view}`).style.display = 'block';
+      document.getElementById(`nav-${view}`).classList.add('active');
+
+      const titles = { quotes: 'Quote Inbox', jobs: 'Job Folders', admins: 'Admin Users', calendar: 'Calendar' };
+      document.getElementById('topbarTitle').textContent = titles[view];
+
+      if (view === 'quotes') loadQuotes();
+      if (view === 'jobs') loadJobs();
+      if (view === 'admins') loadAdmins();
+      if (view === 'calendar') loadCalendar();
+    }
+
+    // ─── QUOTES ───────────────────────────────────────────────
+    async function loadQuotes() {
+      try {
+        allQuotes = await dbGet('quotes');
+        renderQuotes(allQuotes);
+        updateStats();
+      } catch (e) {
+        document.getElementById('quotesLoading').textContent = 'Error loading quotes. Check Supabase connection.';
+      }
+    }
+
+    function renderQuotes(quotes) {
+      const loading = document.getElementById('quotesLoading');
+      const empty   = document.getElementById('quotesEmpty');
+      const table   = document.getElementById('quotesTable');
+      const body    = document.getElementById('quotesBody');
+
+      loading.style.display = 'none';
+
+      if (!quotes.length) {
+        empty.style.display = 'block';
+        table.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      table.style.display = 'table';
+
+      body.innerHTML = quotes.map(q => `
+        <tr onclick="openQuoteModal(${q.id})">
+          <td>${formatDate(q.created_at)}</td>
+          <td><strong>${esc(q.first_name)} ${esc(q.last_name)}</strong></td>
+          <td><a href="tel:${esc(q.phone)}" onclick="event.stopPropagation()">${esc(q.phone)}</a></td>
+          <td><a href="mailto:${esc(q.email)}" onclick="event.stopPropagation()">${esc(q.email)}</a></td>
+          <td>${esc(q.city)}</td>
+          <td>${serviceLabel(q.service)}</td>
+          <td><span class="badge badge--${q.status || 'new'}">${q.status || 'new'}</span></td>
+          <td><button class="btn-sm btn-outline" onclick="event.stopPropagation(); openQuoteModal(${q.id})">View</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function filterQuotes() {
+      const val = document.getElementById('quotesFilter').value;
+      renderQuotes(val ? allQuotes.filter(q => q.status === val) : allQuotes);
+    }
+
+    async function openQuoteModal(id) {
+      const q = allQuotes.find(x => x.id === id);
+      if (!q) return;
+
+      document.getElementById('quoteModalTitle').textContent = `${q.first_name} ${q.last_name}`;
+
+      document.getElementById('quoteModalBody').innerHTML = `
+        <div class="detail-grid">
+          <div class="detail-item"><label>Name</label><p>${esc(q.first_name)} ${esc(q.last_name)}</p></div>
+          <div class="detail-item"><label>Date Received</label><p>${formatDate(q.created_at)}</p></div>
+          <div class="detail-item"><label>Phone</label><p><a href="tel:${esc(q.phone)}">${esc(q.phone)}</a></p></div>
+          <div class="detail-item"><label>Email</label><p><a href="mailto:${esc(q.email)}">${esc(q.email)}</a></p></div>
+          <div class="detail-item"><label>Address</label><p>${esc(q.address)}</p></div>
+          <div class="detail-item"><label>City / Town</label><p>${esc(q.city)}</p></div>
+          <div class="detail-item"><label>Property Type</label><p>${esc(q.property_type || '—')}</p></div>
+          <div class="detail-item"><label>Service</label><p>${serviceLabel(q.service)}</p></div>
+          <div class="detail-item"><label>Home Size</label><p>${esc(q.home_size || '—')}</p></div>
+          <div class="detail-item"><label>Referral Source</label><p>${esc(q.referral || '—')}</p></div>
+        </div>
+
+        ${q.message ? `
+          <p class="detail-section-title">Additional Details</p>
+          <p style="font-size:0.9rem; color:rgba(245,240,232,0.75); background:rgba(255,255,255,0.03); padding:1rem; border-radius:6px; line-height:1.65;">${esc(q.message)}</p>
+        ` : ''}
+
+        <p class="detail-section-title">Update Status</p>
+        <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+          <select class="modal-select" id="quoteStatus_${id}" style="width:auto; margin:0;" onchange="updateQuoteStatus(${id})">
+            <option value="new"       ${q.status==='new'?'selected':''}>New</option>
+            <option value="contacted" ${q.status==='contacted'?'selected':''}>Contacted</option>
+            <option value="quoted"    ${q.status==='quoted'?'selected':''}>Quoted</option>
+            <option value="accepted"  ${q.status==='accepted'?'selected':''}>Accepted</option>
+            <option value="declined"  ${q.status==='declined'?'selected':''}>Declined</option>
+          </select>
+          <span id="statusSaved_${id}" style="font-size:0.8rem; color:#86efac; display:none;">✓ Saved</span>
+        </div>
+
+        <p class="detail-section-title">Actions</p>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <a href="tel:${esc(q.phone)}" class="btn-sm btn-gold">
+            <i class="ph ph-phone"></i> Call Client
+          </a>
+          <a href="mailto:${esc(q.email)}" class="btn-sm btn-outline">
+            <i class="ph ph-envelope"></i> Email Client
+          </a>
+          ${q.status === 'accepted' ? `
+          <button class="btn-sm btn-gold" onclick="convertToJob(${id})">
+            <i class="ph ph-folder-plus"></i> Create Job Folder
+          </button>` : ''}
+        </div>
+      `;
+
+      document.getElementById('quoteModal').classList.add('open');
+    }
+
+    async function updateQuoteStatus(id) {
+      const select = document.getElementById(`quoteStatus_${id}`);
+      const saved  = document.getElementById(`statusSaved_${id}`);
+      const status = select.value;
+      try {
+        await dbPatch('quotes', id, { status });
+        const q = allQuotes.find(x => x.id === id);
+        if (q) q.status = status;
+        saved.style.display = 'inline';
+        setTimeout(() => saved.style.display = 'none', 2000);
+        updateStats();
+      } catch (e) { alert('Failed to update status: ' + e.message); }
+    }
+
+    async function convertToJob(quoteId) {
+      const q = allQuotes.find(x => x.id === quoteId);
+      if (!q) return;
+      try {
+        await dbInsert('jobs', {
+          quote_id: quoteId,
+          first_name: q.first_name,
+          last_name: q.last_name,
+          email: q.email,
+          phone: q.phone,
+          address: q.address,
+          city: q.city,
+          service: q.service,
+          status: 'scheduled',
+          scheduled_time: 'TBD',
+          notes: '',
+          price: null,
+          install_date: null,
+          removal_date: null,
+          files: []
+        });
+        closeModal('quoteModal');
+        showView('jobs');
+        alert(`Job folder created for ${q.first_name} ${q.last_name}.`);
+      } catch (e) { alert('Error creating job: ' + e.message); }
+    }
+
+    // ─── JOBS ─────────────────────────────────────────────────
+    async function loadJobs() {
+      try {
+        allJobs = await dbGet('jobs');
+        renderJobs(allJobs);
+        updateStats();
+        // Show Reset Season button if any completed jobs exist
+        const hasCompleted = allJobs.some(j => j.status === 'completed');
+        document.getElementById('resetSeasonBtn').style.display = hasCompleted ? 'inline-flex' : 'none';
+      } catch (e) {
+        document.getElementById('jobsLoading').textContent = 'Error loading jobs.';
+      }
+    }
+
+    function renderJobs(jobs) {
+      const loading = document.getElementById('jobsLoading');
+      const empty   = document.getElementById('jobsEmpty');
+      const table   = document.getElementById('jobsTable');
+      const body    = document.getElementById('jobsBody');
+
+      loading.style.display = 'none';
+
+      if (!jobs.length) {
+        empty.style.display = 'block';
+        table.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      table.style.display = 'table';
+
+      body.innerHTML = jobs.map(j => `
+        <tr onclick="openJobModal(${j.id})">
+          <td><strong>${esc(j.first_name)} ${esc(j.last_name)}</strong></td>
+          <td>${esc(j.address)}, ${esc(j.city)}</td>
+          <td>${serviceLabel(j.service)}</td>
+          <td>${j.price ? '$' + Number(j.price).toLocaleString() : '—'}</td>
+          <td>${j.install_date ? formatDate(j.install_date) : '—'}</td>
+          <td>${esc(j.scheduled_time || 'TBD')}</td>
+          <td><span class="badge badge--${(j.status||'scheduled').replace(' ','-')}">${j.status || 'scheduled'}</span></td>
+          <td><button class="btn-sm btn-outline" onclick="event.stopPropagation(); openJobModal(${j.id})">Open</button></td>
+        </tr>
+      `).join('');
+    }
+
+    function filterJobs() {
+      const val = document.getElementById('jobsFilter').value;
+      renderJobs(val ? allJobs.filter(j => j.status === val) : allJobs);
+    }
+
+    async function openJobModal(id) {
+      const j = allJobs.find(x => x.id === id);
+      if (!j) return;
+
+      document.getElementById('jobModalTitle').textContent = `${j.first_name} ${j.last_name}`;
+
+      // Build photo thumbnails
+      let photosHtml = '';
+      if (j.photos && j.photos.length) {
+        photosHtml = `<div class="photos-grid">${j.photos.map((url, i) => `
+          <div class="photo-thumb">
+            <img src="${esc(url)}" alt="Photo ${i+1}" />
+            <button class="photo-thumb__del" onclick="deleteJobPhoto(${id}, ${i})" title="Delete">×</button>
+          </div>`).join('')}</div>`;
+      }
+
+      // Build files list
+      let filesHtml = '';
+      const jobFiles = parseFiles(j.files);
+      if (jobFiles.length) {
+        filesHtml = jobFiles.map((f, i) => `
+          <div class="file-item">
+            <i class="ph ${fileIcon(f.name)}"></i>
+            <span class="file-item__name">${esc(f.name)}</span>
+            <div class="file-item__actions">
+              <a class="btn-sm btn-outline" href="${esc(f.url)}" target="_blank" download="${esc(f.name)}">
+                <i class="ph ph-download-simple"></i>
+              </a>
+              <button class="btn-sm btn-danger" onclick="deleteJobFile(${id}, ${i})">
+                <i class="ph ph-trash"></i>
+              </button>
+            </div>
+          </div>`).join('');
+      }
+
+      document.getElementById('jobModalBody').innerHTML = `
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab(this, 'tab-details-${id}')">Details</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-notes-${id}')">Notes</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-photos-${id}')">Photos</button>
+          <button class="tab-btn" onclick="switchTab(this, 'tab-files-${id}')">Files</button>
+        </div>
+
+        <!-- DETAILS TAB -->
+        <div class="tab-panel active" id="tab-details-${id}">
+          <div class="detail-grid">
+            <div class="detail-item"><label>Client</label><p>${esc(j.first_name)} ${esc(j.last_name)}</p></div>
+            <div class="detail-item"><label>Service</label><p>${serviceLabel(j.service)}</p></div>
+            <div class="detail-item"><label>Phone</label><p><a href="tel:${esc(j.phone)}">${esc(j.phone)}</a></p></div>
+            <div class="detail-item"><label>Email</label><p><a href="mailto:${esc(j.email)}">${esc(j.email)}</a></p></div>
+            <div class="detail-item" style="grid-column:span 2;"><label>Address</label><p>${esc(j.address)}, ${esc(j.city)}, CT</p></div>
+          </div>
+
+          <p class="detail-section-title">Job Status</p>
+          <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; margin-bottom:1.25rem;">
+            <select class="modal-select" id="jobStatus_${id}" style="width:auto; margin:0;" onchange="updateJobStatus(${id})">
+              <option value="scheduled"   ${j.status==='scheduled'?'selected':''}>Scheduled</option>
+              <option value="in-progress" ${j.status==='in-progress'?'selected':''}>In Progress</option>
+              <option value="completed"   ${j.status==='completed'?'selected':''}>Completed</option>
+              <option value="on-hold"     ${j.status==='on-hold'?'selected':''}>On Hold</option>
+            </select>
+            <span id="jobStatusSaved_${id}" style="font-size:0.8rem; color:#86efac; display:none;">✓ Saved</span>
+          </div>
+
+          <p class="detail-section-title">Pricing & Scheduling</p>
+          <div class="detail-grid">
+            <div class="modal-form-group">
+              <label class="modal-label">Invoice Amount ($)</label>
+              <input class="modal-input" type="number" id="jobPrice_${id}" value="${j.price || ''}" placeholder="0.00" style="margin:0;" />
+            </div>
+            <div class="modal-form-group">
+              <label class="modal-label">Time Slot</label>
+              <select class="modal-select" id="jobTime_${id}" style="margin:0;">
+                <option value="TBD"       ${(j.scheduled_time||'TBD')==='TBD'?'selected':''}>TBD</option>
+                <option value="Morning"   ${j.scheduled_time==='Morning'?'selected':''}>Morning</option>
+                <option value="Afternoon" ${j.scheduled_time==='Afternoon'?'selected':''}>Afternoon</option>
+                <option value="Full Day"  ${j.scheduled_time==='Full Day'?'selected':''}>Full Day</option>
+              </select>
+            </div>
+            <div class="modal-form-group">
+              <label class="modal-label">Install Date</label>
+              <input class="modal-input" type="date" id="jobInstall_${id}" value="${j.install_date || ''}" style="margin:0;" />
+            </div>
+            <div class="modal-form-group">
+              <label class="modal-label">Removal Date</label>
+              <input class="modal-input" type="date" id="jobRemoval_${id}" value="${j.removal_date || ''}" style="margin:0;" />
+            </div>
+          </div>
+
+          <button class="btn-sm btn-gold" onclick="saveJobDetails(${id})">
+            <i class="ph ph-floppy-disk"></i> Save Changes
+          </button>
+          <span id="jobDetailSaved_${id}" style="font-size:0.8rem; color:#86efac; display:none; margin-left:0.75rem;">✓ Saved</span>
+        </div>
+
+        <!-- NOTES TAB -->
+        <div class="tab-panel" id="tab-notes-${id}">
+          <label class="modal-label">Internal Notes</label>
+          <textarea class="modal-textarea" id="jobNotes_${id}" style="min-height:200px;">${esc(j.notes || '')}</textarea>
+          <button class="btn-sm btn-gold" onclick="saveJobNotes(${id})">
+            <i class="ph ph-floppy-disk"></i> Save Notes
+          </button>
+          <span id="notesSaved_${id}" style="font-size:0.8rem; color:#86efac; display:none; margin-left:0.75rem;">✓ Saved</span>
+        </div>
+
+        <!-- PHOTOS TAB -->
+        <div class="tab-panel" id="tab-photos-${id}">
+          <p style="font-size:0.82rem; color:rgba(245,240,232,0.45); margin-bottom:1rem;">
+            Upload photos for this job (before/after, design reference, etc.)
+          </p>
+          <label class="photo-upload-area" for="photoUpload_${id}">
+            <i class="ph ph-cloud-arrow-up"></i>
+            <p>Click to upload photos</p>
+            <p style="font-size:0.75rem; margin-top:0.25rem;">JPG, PNG, WEBP — max 10MB each</p>
+          </label>
+          <input type="file" id="photoUpload_${id}" accept="image/*" multiple style="display:none;" onchange="uploadPhotos(${id}, this)" />
+          <div id="photosGrid_${id}">${photosHtml}</div>
+          <p id="photoUploadMsg_${id}" style="display:none; font-size:0.82rem; margin-top:0.5rem;"></p>
+        </div>
+
+        <!-- FILES TAB -->
+        <div class="tab-panel" id="tab-files-${id}">
+          <p style="font-size:0.82rem; color:rgba(245,240,232,0.45); margin-bottom:1rem;">
+            Upload any files — PDFs, contracts, spreadsheets, design files, etc.
+          </p>
+          <label class="photo-upload-area" for="fileUpload_${id}">
+            <i class="ph ph-file-arrow-up"></i>
+            <p>Click to upload files</p>
+            <p style="font-size:0.75rem; margin-top:0.25rem;">Any file type — max 50MB each</p>
+          </label>
+          <input type="file" id="fileUpload_${id}" multiple style="display:none;" onchange="uploadFiles(${id}, this)" />
+          <div id="filesList_${id}">${filesHtml || '<p style="font-size:0.82rem; color:rgba(245,240,232,0.3); margin-top:0.5rem;">No files uploaded yet.</p>'}</div>
+          <p id="fileUploadMsg_${id}" style="display:none; font-size:0.82rem; margin-top:0.5rem;"></p>
+        </div>
+      `;
+
+      document.getElementById('jobModal').classList.add('open');
+    }
+
+    function switchTab(btn, tabId) {
+      const modal = btn.closest('.modal__body');
+      modal.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      modal.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    async function updateJobStatus(id) {
+      const status = document.getElementById(`jobStatus_${id}`).value;
+      const saved  = document.getElementById(`jobStatusSaved_${id}`);
+      try {
+        await dbPatch('jobs', id, { status });
+        const j = allJobs.find(x => x.id === id);
+        if (j) j.status = status;
+        saved.style.display = 'inline';
+        setTimeout(() => saved.style.display = 'none', 2000);
+        updateStats();
+        // Update reset button visibility
+        const hasCompleted = allJobs.some(j => j.status === 'completed');
+        document.getElementById('resetSeasonBtn').style.display = hasCompleted ? 'inline-flex' : 'none';
+      } catch (e) { alert('Error: ' + e.message); }
+    }
+
+    async function saveJobDetails(id) {
+      const price        = document.getElementById(`jobPrice_${id}`).value;
+      const install_date = document.getElementById(`jobInstall_${id}`).value || null;
+      const removal_date = document.getElementById(`jobRemoval_${id}`).value || null;
+      const scheduled_time = document.getElementById(`jobTime_${id}`).value;
+      const saved        = document.getElementById(`jobDetailSaved_${id}`);
+      try {
+        await dbPatch('jobs', id, {
+          price: price ? parseFloat(price) : null,
+          install_date, removal_date, scheduled_time
+        });
+        const j = allJobs.find(x => x.id === id);
+        if (j) { j.price = price; j.install_date = install_date; j.removal_date = removal_date; j.scheduled_time = scheduled_time; }
+        saved.style.display = 'inline';
+        setTimeout(() => saved.style.display = 'none', 2000);
+      } catch (e) { alert('Error: ' + e.message); }
+    }
+
+    async function saveJobNotes(id) {
+      const notes = document.getElementById(`jobNotes_${id}`).value;
+      const saved = document.getElementById(`notesSaved_${id}`);
+      try {
+        await dbPatch('jobs', id, { notes });
+        const j = allJobs.find(x => x.id === id);
+        if (j) j.notes = notes;
+        saved.style.display = 'inline';
+        setTimeout(() => saved.style.display = 'none', 2000);
+      } catch (e) { alert('Error: ' + e.message); }
+    }
+
+    // ─── PHOTO UPLOAD (images only) ───────────────────────────
+    async function uploadPhotos(jobId, input) {
+      const files = Array.from(input.files);
+      const msg   = document.getElementById(`photoUploadMsg_${jobId}`);
+      const grid  = document.getElementById(`photosGrid_${jobId}`);
+      if (!files.length) return;
+
+      msg.style.display = 'block';
+      msg.style.color = 'rgba(245,240,232,0.5)';
+      msg.textContent = `Uploading ${files.length} photo(s)...`;
+
+      const uploadedUrls = [];
+
+      for (const file of files) {
+        if (file.size > 10 * 1024 * 1024) {
+          msg.textContent = `${file.name} is too large (max 10MB)`;
+          msg.style.color = '#fca5a5';
+          continue;
+        }
+        const ext  = file.name.split('.').pop();
+        const path = `jobs/${jobId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+        const r = await fetch(`${SUPABASE_URL}/storage/v1/object/job-photos/${path}`, {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SESSION.access_token}`, 'Content-Type': file.type },
+          body: file
+        });
+        if (r.ok) uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/job-photos/${path}`);
+      }
+
+      if (uploadedUrls.length) {
+        const j = allJobs.find(x => x.id === jobId);
+        const newPhotos = [...(j?.photos || []), ...uploadedUrls];
+        await dbPatch('jobs', jobId, { photos: newPhotos });
+        if (j) j.photos = newPhotos;
+        grid.innerHTML = `<div class="photos-grid">${newPhotos.map((url, i) => `
+          <div class="photo-thumb">
+            <img src="${esc(url)}" alt="Photo ${i+1}" />
+            <button class="photo-thumb__del" onclick="deleteJobPhoto(${jobId}, ${i})">×</button>
+          </div>`).join('')}</div>`;
+        msg.textContent = `✓ ${uploadedUrls.length} photo(s) uploaded.`;
+        msg.style.color = '#86efac';
+        setTimeout(() => msg.style.display = 'none', 3000);
+      } else {
+        msg.textContent = 'Upload failed. Check your Supabase storage bucket.';
+        msg.style.color = '#fca5a5';
+      }
+      input.value = '';
+    }
+
+    async function deleteJobPhoto(jobId, photoIndex) {
+      if (!confirm('Delete this photo?')) return;
+      const j = allJobs.find(x => x.id === jobId);
+      if (!j || !j.photos) return;
+      const newPhotos = j.photos.filter((_, i) => i !== photoIndex);
+      await dbPatch('jobs', jobId, { photos: newPhotos });
+      j.photos = newPhotos;
+      const grid = document.getElementById(`photosGrid_${jobId}`);
+      if (grid) {
+        grid.innerHTML = newPhotos.length ? `<div class="photos-grid">${newPhotos.map((url, i) => `
+          <div class="photo-thumb">
+            <img src="${esc(url)}" alt="Photo ${i+1}" />
+            <button class="photo-thumb__del" onclick="deleteJobPhoto(${jobId}, ${i})">×</button>
+          </div>`).join('')}</div>` : '';
+      }
+    }
+
+    // ─── FILE UPLOAD (any file type) ─────────────────────────
+    async function uploadFiles(jobId, input) {
+      const files = Array.from(input.files);
+      const msg   = document.getElementById(`fileUploadMsg_${jobId}`);
+      const list  = document.getElementById(`filesList_${jobId}`);
+      if (!files.length) return;
+
+      msg.style.display = 'block';
+      msg.style.color = 'rgba(245,240,232,0.5)';
+      msg.textContent = `Uploading ${files.length} file(s)...`;
+
+      const uploadedFiles = [];
+
+      for (const file of files) {
+        if (file.size > 50 * 1024 * 1024) {
+          msg.textContent = `${file.name} is too large (max 50MB)`;
+          msg.style.color = '#fca5a5';
+          continue;
+        }
+        const safeName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+        const path = `jobs/${jobId}/files/${safeName}`;
+        const r = await fetch(`${SUPABASE_URL}/storage/v1/object/job-photos/${path}`, {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SESSION.access_token}`, 'Content-Type': file.type || 'application/octet-stream' },
+          body: file
+        });
+        if (r.ok) {
+          uploadedFiles.push(JSON.stringify({
+            name: file.name,
+            url: `${SUPABASE_URL}/storage/v1/object/public/job-photos/${path}`
+          }));
+        }
+      }
+
+      if (uploadedFiles.length) {
+        const j = allJobs.find(x => x.id === jobId);
+        const newFiles = [...(j?.files || []), ...uploadedFiles];
+        await dbPatch('jobs', jobId, { files: newFiles });
+        if (j) j.files = newFiles;
+
+        const parsed = parseFiles(newFiles);
+        list.innerHTML = parsed.map((f, i) => `
+          <div class="file-item">
+            <i class="ph ${fileIcon(f.name)}"></i>
+            <span class="file-item__name">${esc(f.name)}</span>
+            <div class="file-item__actions">
+              <a class="btn-sm btn-outline" href="${esc(f.url)}" target="_blank" download="${esc(f.name)}">
+                <i class="ph ph-download-simple"></i>
+              </a>
+              <button class="btn-sm btn-danger" onclick="deleteJobFile(${jobId}, ${i})">
+                <i class="ph ph-trash"></i>
+              </button>
+            </div>
+          </div>`).join('');
+
+        msg.textContent = `✓ ${uploadedFiles.length} file(s) uploaded.`;
+        msg.style.color = '#86efac';
+        setTimeout(() => msg.style.display = 'none', 3000);
+      } else {
+        msg.textContent = 'Upload failed. Check storage bucket.';
+        msg.style.color = '#fca5a5';
+      }
+      input.value = '';
+    }
+
+    async function deleteJobFile(jobId, fileIndex) {
+      if (!confirm('Delete this file?')) return;
+      const j = allJobs.find(x => x.id === jobId);
+      if (!j || !j.files) return;
+      const newFiles = j.files.filter((_, i) => i !== fileIndex);
+      await dbPatch('jobs', jobId, { files: newFiles });
+      j.files = newFiles;
+      const list = document.getElementById(`filesList_${jobId}`);
+      if (list) {
+        const parsed = parseFiles(newFiles);
+        list.innerHTML = parsed.length ? parsed.map((f, i) => `
+          <div class="file-item">
+            <i class="ph ${fileIcon(f.name)}"></i>
+            <span class="file-item__name">${esc(f.name)}</span>
+            <div class="file-item__actions">
+              <a class="btn-sm btn-outline" href="${esc(f.url)}" target="_blank" download="${esc(f.name)}">
+                <i class="ph ph-download-simple"></i>
+              </a>
+              <button class="btn-sm btn-danger" onclick="deleteJobFile(${jobId}, ${i})">
+                <i class="ph ph-trash"></i>
+              </button>
+            </div>
+          </div>`).join('') : '<p style="font-size:0.82rem; color:rgba(245,240,232,0.3); margin-top:0.5rem;">No files uploaded yet.</p>';
+      }
+    }
+
+    // ─── MANUAL JOB CREATION ─────────────────────────────────
+    function openNewJobModal() {
+      // Clear form
+      ['nj-first','nj-last','nj-phone','nj-email','nj-address','nj-city','nj-price','nj-notes'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('nj-service').value  = 'christmas';
+      document.getElementById('nj-status').value   = 'scheduled';
+      document.getElementById('nj-time').value     = 'TBD';
+      document.getElementById('nj-install').value  = '';
+      document.getElementById('nj-removal').value  = '';
+      document.getElementById('newJobError').style.display = 'none';
+      document.getElementById('newJobModal').classList.add('open');
+    }
+
+    async function createManualJob() {
+      const firstName = document.getElementById('nj-first').value.trim();
+      const lastName  = document.getElementById('nj-last').value.trim();
+      const address   = document.getElementById('nj-address').value.trim();
+      const city      = document.getElementById('nj-city').value.trim();
+      const errEl     = document.getElementById('newJobError');
+
+      if (!firstName || !lastName || !address || !city) {
+        errEl.textContent = 'First name, last name, address, and city are required.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      errEl.style.display = 'none';
+
+      const priceVal = document.getElementById('nj-price').value;
+
+      try {
+        const result = await dbInsert('jobs', {
+          quote_id:       null,
+          first_name:     firstName,
+          last_name:      lastName,
+          email:          document.getElementById('nj-email').value.trim() || '',
+          phone:          document.getElementById('nj-phone').value.trim() || '',
+          address,
+          city,
+          service:        document.getElementById('nj-service').value,
+          status:         document.getElementById('nj-status').value,
+          scheduled_time: document.getElementById('nj-time').value,
+          price:          priceVal ? parseFloat(priceVal) : null,
+          install_date:   document.getElementById('nj-install').value || null,
+          removal_date:   document.getElementById('nj-removal').value || null,
+          notes:          document.getElementById('nj-notes').value,
+          photos:         [],
+          files:          []
+        });
+
+        if (result && result[0]) allJobs.unshift(result[0]);
+        closeModal('newJobModal');
+        renderJobs(allJobs);
+        updateStats();
+
+        // Open the new job immediately
+        if (result && result[0]) openJobModal(result[0].id);
+      } catch (e) {
+        errEl.textContent = 'Error creating job: ' + e.message;
+        errEl.style.display = 'block';
+      }
+    }
+
+    // ─── SEASON RESET ─────────────────────────────────────────
+    async function resetSeasonJobs() {
+      const completed = allJobs.filter(j => j.status === 'completed');
+      if (!completed.length) return;
+
+      const confirmed = confirm(
+        `Reset Season?\n\nThis will move all ${completed.length} completed job(s) back to "Scheduled" and clear their install/removal dates, ready for the new season.\n\nThis cannot be undone.`
+      );
+      if (!confirmed) return;
+
+      try {
+        await dbPatchWhere('jobs', 'status=eq.completed', {
+          status: 'scheduled',
+          install_date: null,
+          removal_date: null,
+          scheduled_time: 'TBD'
+        });
+
+        // Update local state
+        allJobs.forEach(j => {
+          if (j.status === 'completed') {
+            j.status = 'scheduled';
+            j.install_date = null;
+            j.removal_date = null;
+            j.scheduled_time = 'TBD';
+          }
+        });
+
+        renderJobs(allJobs);
+        updateStats();
+        document.getElementById('resetSeasonBtn').style.display = 'none';
+        alert(`✓ ${completed.length} job(s) reset to Scheduled for the new season.`);
+      } catch (e) {
+        alert('Error resetting jobs: ' + e.message);
+      }
+    }
+
+    // ─── CALENDAR ─────────────────────────────────────────────
+    async function loadCalendar() {
+      if (!allJobs.length) {
+        try { allJobs = await dbGet('jobs'); } catch (e) {}
+      }
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+      document.getElementById('calMonthTitle').textContent = `${MONTHS[calMonth]} ${calYear}`;
+
+      const today      = new Date();
+      const firstDay   = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+      const daysInPrev  = new Date(calYear, calMonth, 0).getDate();
+
+      // Map install_date → jobs
+      const jobsByDate = {};
+      allJobs.forEach(j => {
+        if (!j.install_date) return;
+        const key = j.install_date.slice(0, 10); // YYYY-MM-DD
+        if (!jobsByDate[key]) jobsByDate[key] = [];
+        jobsByDate[key].push(j);
+      });
+
+      // Build header row
+      let html = DAYS.map(d => `<div class="cal-header-cell">${d}</div>`).join('');
+
+      // Prev month trailing days
+      for (let i = firstDay - 1; i >= 0; i--) {
+        html += `<div class="cal-day other-month"><div class="cal-day__num">${daysInPrev - i}</div></div>`;
+      }
+
+      // Current month days
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr    = `${calYear}-${String(calMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const isToday    = (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear());
+        const dayJobs    = jobsByDate[dateStr] || [];
+        const chips      = dayJobs.slice(0, 3).map(j =>
+          `<span class="cal-job-chip" onclick="event.stopPropagation(); openJobModal(${j.id})">${esc(j.first_name)} ${esc(j.last_name)}</span>`
+        ).join('');
+        const more = dayJobs.length > 3 ? `<span style="font-size:0.65rem; color:rgba(245,240,232,0.3);">+${dayJobs.length - 3} more</span>` : '';
+
+        html += `
+          <div class="cal-day${isToday ? ' today' : ''}" onclick="openCalendarDayModal('${dateStr}')">
+            <div class="cal-day__num">${d}</div>
+            ${chips}${more}
+          </div>`;
+      }
+
+      // Next month leading days
+      const totalCells = firstDay + daysInMonth;
+      const remainder  = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+      for (let d = 1; d <= remainder; d++) {
+        html += `<div class="cal-day other-month"><div class="cal-day__num">${d}</div></div>`;
+      }
+
+      document.getElementById('calGrid').innerHTML = html;
+    }
+
+    function calNavPrev() {
+      calMonth--;
+      if (calMonth < 0) { calMonth = 11; calYear--; }
+      renderCalendar();
+    }
+
+    function calNavNext() {
+      calMonth++;
+      if (calMonth > 11) { calMonth = 0; calYear++; }
+      renderCalendar();
+    }
+
+    function openCalendarDayModal(dateStr) {
+      const date    = new Date(dateStr + 'T00:00:00');
+      const label   = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+      const dayJobs = allJobs.filter(j => j.install_date && j.install_date.slice(0,10) === dateStr);
+
+      document.getElementById('calDayTitle').textContent = label;
+
+      let body = '';
+      if (dayJobs.length) {
+        body += `<p class="detail-section-title" style="margin-top:0;">${dayJobs.length} Job${dayJobs.length > 1 ? 's' : ''} Scheduled</p>`;
+        body += dayJobs.map(j => `
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:0.75rem; background:rgba(255,255,255,0.03); border:1px solid rgba(201,168,76,0.1); border-radius:6px; margin-bottom:0.5rem;">
+            <div>
+              <p style="font-weight:600; font-size:0.9rem;">${esc(j.first_name)} ${esc(j.last_name)}</p>
+              <p style="font-size:0.78rem; color:rgba(245,240,232,0.45);">${esc(j.address)}, ${esc(j.city)} &nbsp;·&nbsp; ${esc(j.scheduled_time || 'TBD')}</p>
+            </div>
+            <button class="btn-sm btn-outline" onclick="closeModal('calDayModal'); openJobModal(${j.id})">Open</button>
+          </div>`).join('');
+      } else {
+        body += `<p style="font-size:0.85rem; color:rgba(245,240,232,0.35); text-align:center; padding:2rem 0;">No jobs scheduled for this day.</p>`;
+      }
+
+      body += `
+        <p class="detail-section-title">Assign Existing Job to This Date</p>
+        <p style="font-size:0.82rem; color:rgba(245,240,232,0.45); margin-bottom:0.75rem;">
+          Select an active job and click Assign to set its install date to ${dateStr}.
+        </p>
+        <div style="display:flex; gap:0.75rem; align-items:center;">
+          <select class="modal-select" id="calAssignSelect" style="margin:0; flex:1;">
+            <option value="">— Select a job —</option>
+            ${allJobs.filter(j => j.status !== 'completed').map(j =>
+              `<option value="${j.id}">${esc(j.first_name)} ${esc(j.last_name)} — ${esc(j.address)}</option>`
+            ).join('')}
+          </select>
+          <button class="btn-sm btn-gold" onclick="assignJobToDate('${dateStr}')">Assign</button>
+        </div>
+        <p id="calAssignMsg" style="display:none; font-size:0.82rem; margin-top:0.5rem;"></p>`;
+
+      document.getElementById('calDayBody').innerHTML = body;
+      document.getElementById('calDayModal').classList.add('open');
+    }
+
+    async function assignJobToDate(dateStr) {
+      const jobId = parseInt(document.getElementById('calAssignSelect').value);
+      const msg   = document.getElementById('calAssignMsg');
+
+      if (!jobId) {
+        msg.textContent = 'Please select a job first.';
+        msg.style.color = '#fca5a5';
+        msg.style.display = 'block';
+        return;
+      }
+
+      try {
+        await dbPatch('jobs', jobId, { install_date: dateStr });
+        const j = allJobs.find(x => x.id === jobId);
+        if (j) j.install_date = dateStr;
+        msg.textContent = '✓ Job assigned to this date.';
+        msg.style.color = '#86efac';
+        msg.style.display = 'block';
+        renderCalendar();
+        // Refresh the day modal to show the updated assignment
+        setTimeout(() => openCalendarDayModal(dateStr), 300);
+      } catch (e) {
+        msg.textContent = 'Error: ' + e.message;
+        msg.style.color = '#fca5a5';
+        msg.style.display = 'block';
+      }
+    }
+
+    // ─── ADMINS ───────────────────────────────────────────────
+    async function loadAdmins() {
+      document.getElementById('adminsLoading').style.display = 'none';
+      document.getElementById('adminsEmpty').style.display = 'block';
+      document.getElementById('adminsEmpty').innerHTML = `
+        <i class="ph ph-info"></i>
+        <p style="max-width:400px; margin:0 auto; font-size:0.85rem; line-height:1.6;">
+          To add or remove admin users, go to your <strong style="color:var(--gold);">Supabase Dashboard → Authentication → Users</strong>.<br /><br />
+          Invite new users by email. They will receive a link to set their password.
+        </p>`;
+    }
+
+    function openAddAdminModal() {
+      document.getElementById('addAdminModal').classList.add('open');
+    }
+
+    async function inviteAdmin() {
+      const msg = document.getElementById('addAdminMsg');
+      msg.style.display = 'block';
+      msg.style.color = 'rgba(245,240,232,0.6)';
+      msg.textContent = 'To invite admins, use the Supabase Dashboard → Authentication → Invite User.';
+    }
+
+    // ─── STATS ────────────────────────────────────────────────
+    function updateStats() {
+      document.getElementById('stat-total').textContent = allQuotes.length;
+      document.getElementById('stat-new').textContent = allQuotes.filter(q => q.status === 'new').length;
+      document.getElementById('new-count').textContent = allQuotes.filter(q => q.status === 'new').length;
+      document.getElementById('stat-jobs').textContent = allJobs.filter(j => ['scheduled','in-progress'].includes(j.status)).length;
+      document.getElementById('stat-completed').textContent = allJobs.filter(j => j.status === 'completed').length;
+    }
+
+    // ─── MODALS ───────────────────────────────────────────────
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) overlay.classList.remove('open');
+      });
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+      }
+    });
+
+    // ─── REFRESH ──────────────────────────────────────────────
+    function refreshData() {
+      const active = document.querySelector('.sidebar__link.active');
+      if (active?.id === 'nav-quotes')   loadQuotes();
+      if (active?.id === 'nav-jobs')     loadJobs();
+      if (active?.id === 'nav-calendar') loadCalendar();
+    }
+
+    // ─── UTILS ────────────────────────────────────────────────
+    function formatDate(iso) {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function serviceLabel(s) {
+      const map = { christmas: 'Christmas Lighting', wedding: 'Wedding/Events', business: 'Small Business', other: 'Other' };
+      return map[s] || s || '—';
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function parseFiles(arr) {
+      if (!arr || !arr.length) return [];
+      return arr.map(entry => {
+        try { return JSON.parse(entry); } catch { return { name: entry.split('/').pop(), url: entry }; }
+      });
+    }
+
+    function fileIcon(name) {
+      const ext = (name || '').split('.').pop().toLowerCase();
+      if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return 'ph-image';
+      if (['pdf'].includes(ext)) return 'ph-file-pdf';
+      if (['doc','docx'].includes(ext)) return 'ph-file-doc';
+      if (['xls','xlsx','csv'].includes(ext)) return 'ph-file-xls';
+      if (['zip','rar','7z'].includes(ext)) return 'ph-file-zip';
+      return 'ph-file';
+    }
+
+    // ─── INIT ─────────────────────────────────────────────────
+    if (checkAuth()) {
+      loadQuotes();
+      dbGet('jobs').then(jobs => { allJobs = jobs; updateStats(); }).catch(() => {});
+    }
+  </script>
+
+</body>
+</html>
