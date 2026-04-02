@@ -216,7 +216,7 @@ section {
 }
 
 .nav__logo img {
-  height: 72px;
+  height: 96px;
   width: auto;
   clip-path: inset(0 0 27% 0);
   filter: brightness(1.1);
@@ -224,7 +224,7 @@ section {
 
 .nav__logo-text {
   font-family: var(--font-serif);
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   font-weight: 600;
   color: var(--warm-white);
   line-height: 1.2;
