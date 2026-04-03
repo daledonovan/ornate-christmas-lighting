@@ -218,7 +218,7 @@ section {
 .nav__logo img {
   height: 96px;
   width: auto;
-  clip-path: inset(0 0 27% 0);
+  
   filter: brightness(1.1);
 }
 
@@ -891,7 +891,7 @@ section {
   height: 80px;
   width: auto;
   margin-bottom: 1rem;
-  clip-path: inset(0 0 27% 0);
+  
 }
 
 .footer__brand-text {
