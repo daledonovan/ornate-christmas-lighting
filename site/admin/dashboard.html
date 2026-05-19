@@ -1232,7 +1232,10 @@
           <td>${j.install_date ? formatDate(j.install_date) : '—'}</td>
           <td>${esc(j.scheduled_time || 'TBD')}</td>
           <td><span class="badge badge--${(j.status||'scheduled').replace(' ','-')}">${j.status || 'scheduled'}</span></td>
-          <td><button class="btn-sm btn-outline" onclick="event.stopPropagation(); openJobModal(${j.id})">Open</button></td>
+          <td style="display:flex;gap:0.4rem;">
+            <button class="btn-sm btn-outline" onclick="event.stopPropagation(); openJobModal(${j.id})">Open</button>
+            <button class="btn-sm" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);" onclick="event.stopPropagation(); deleteJob(${j.id}, '${esc(j.first_name)} ${esc(j.last_name)}')">Delete</button>
+          </td>
         </tr>
       `).join('');
     }
@@ -1240,6 +1243,14 @@
     function filterJobs() {
       const val = document.getElementById('jobsFilter').value;
       renderJobs(val ? allJobs.filter(j => j.status === val) : allJobs);
+    }
+
+    async function deleteJob(id, name) {
+      if (!confirm(`Delete job folder for ${name}? This cannot be undone.`)) return;
+      const { error } = await sb.from('jobs').delete().eq('id', id);
+      if (error) { alert('Delete failed: ' + error.message); return; }
+      allJobs = allJobs.filter(j => j.id !== id);
+      renderJobs(allJobs);
     }
 
     async function openJobModal(id) {
