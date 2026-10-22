@@ -124,16 +124,34 @@ select cron.schedule(
 -- select cron.unschedule('ornate-season-reset');
 
 -- ============================================================
--- STORAGE BUCKET for job photos
--- Run this separately OR create the bucket manually in
--- Supabase Dashboard → Storage → New Bucket
+-- STORAGE BUCKET for job photos & files
+-- Run this in Supabase Dashboard → SQL Editor
 -- ============================================================
 
--- insert into storage.buckets (id, name, public)
--- values ('job-photos', 'job-photos', true);
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('job-photos', 'job-photos', true, null, null)
+on conflict (id) do update set public = true;
 
--- NOTE: Create the bucket manually in the Supabase Dashboard:
--- Storage → New Bucket → Name: "job-photos" → Public: true
+drop policy if exists "Public can view job photos" on storage.objects;
+drop policy if exists "Auth users can upload job photos" on storage.objects;
+drop policy if exists "Auth users can update job photos" on storage.objects;
+drop policy if exists "Auth users can delete job photos" on storage.objects;
+
+create policy "Public can view job photos"
+  on storage.objects for select
+  using (bucket_id = 'job-photos');
+
+create policy "Auth users can upload job photos"
+  on storage.objects for insert
+  with check (bucket_id = 'job-photos' and auth.role() = 'authenticated');
+
+create policy "Auth users can update job photos"
+  on storage.objects for update
+  using (bucket_id = 'job-photos' and auth.role() = 'authenticated');
+
+create policy "Auth users can delete job photos"
+  on storage.objects for delete
+  using (bucket_id = 'job-photos' and auth.role() = 'authenticated');
 
 -- ============================================================
 -- AFTER RUNNING THIS SQL:

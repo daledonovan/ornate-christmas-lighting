@@ -1514,6 +1514,7 @@
       msg.textContent = `Uploading ${files.length} photo(s)...`;
 
       const uploadedUrls = [];
+      let lastError = '';
 
       for (const file of files) {
         if (file.size > 10 * 1024 * 1024) {
@@ -1523,12 +1524,21 @@
         }
         const ext  = file.name.split('.').pop();
         const path = `jobs/${jobId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-        const r = await fetch(`${SUPABASE_URL}/storage/v1/object/job-photos/${path}`, {
-          method: 'POST',
-          headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SESSION.access_token}`, 'Content-Type': file.type },
-          body: file
-        });
-        if (r.ok) uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/job-photos/${path}`);
+        try {
+          const r = await fetch(`${SUPABASE_URL}/storage/v1/object/job-photos/${path}`, {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SESSION.access_token}`, 'Content-Type': file.type || 'image/jpeg' },
+            body: file
+          });
+          if (r.ok) {
+            uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/job-photos/${path}`);
+          } else {
+            const errData = await r.json().catch(() => ({}));
+            lastError = errData.message || errData.error || (await r.text().catch(() => 'Upload failed'));
+          }
+        } catch (e) {
+          lastError = e.message;
+        }
       }
 
       if (uploadedUrls.length) {
@@ -1545,7 +1555,7 @@
         msg.style.color = '#86efac';
         setTimeout(() => msg.style.display = 'none', 3000);
       } else {
-        msg.textContent = 'Upload failed. Check your Supabase storage bucket.';
+        msg.textContent = `Upload failed: ${lastError || 'Bucket "job-photos" missing or permissions not configured in Supabase.'}`;
         msg.style.color = '#fca5a5';
       }
       input.value = '';
@@ -1580,6 +1590,7 @@
       msg.textContent = `Uploading ${files.length} file(s)...`;
 
       const uploadedFiles = [];
+      let lastError = '';
 
       for (const file of files) {
         if (file.size > 50 * 1024 * 1024) {
@@ -1589,16 +1600,23 @@
         }
         const safeName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
         const path = `jobs/${jobId}/files/${safeName}`;
-        const r = await fetch(`${SUPABASE_URL}/storage/v1/object/job-photos/${path}`, {
-          method: 'POST',
-          headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SESSION.access_token}`, 'Content-Type': file.type || 'application/octet-stream' },
-          body: file
-        });
-        if (r.ok) {
-          uploadedFiles.push(JSON.stringify({
-            name: file.name,
-            url: `${SUPABASE_URL}/storage/v1/object/public/job-photos/${path}`
-          }));
+        try {
+          const r = await fetch(`${SUPABASE_URL}/storage/v1/object/job-photos/${path}`, {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SESSION.access_token}`, 'Content-Type': file.type || 'application/octet-stream' },
+            body: file
+          });
+          if (r.ok) {
+            uploadedFiles.push(JSON.stringify({
+              name: file.name,
+              url: `${SUPABASE_URL}/storage/v1/object/public/job-photos/${path}`
+            }));
+          } else {
+            const errData = await r.json().catch(() => ({}));
+            lastError = errData.message || errData.error || (await r.text().catch(() => 'Upload failed'));
+          }
+        } catch (e) {
+          lastError = e.message;
         }
       }
 
@@ -1627,7 +1645,7 @@
         msg.style.color = '#86efac';
         setTimeout(() => msg.style.display = 'none', 3000);
       } else {
-        msg.textContent = 'Upload failed. Check storage bucket.';
+        msg.textContent = `Upload failed: ${lastError || 'Bucket "job-photos" missing or permissions not configured in Supabase.'}`;
         msg.style.color = '#fca5a5';
       }
       input.value = '';
