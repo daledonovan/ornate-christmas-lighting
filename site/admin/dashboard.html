@@ -1094,7 +1094,10 @@
           <td>${esc(q.city)}</td>
           <td>${serviceLabel(q.service)}</td>
           <td><span class="badge badge--${q.status || 'new'}">${q.status || 'new'}</span></td>
-          <td><button class="btn-sm btn-outline" onclick="event.stopPropagation(); openQuoteModal(${q.id})">View</button></td>
+          <td style="display:flex;gap:0.4rem;" onclick="event.stopPropagation();">
+            <button class="btn-sm btn-outline" onclick="openQuoteModal(${q.id})">View</button>
+            <button class="btn-sm btn-danger" onclick="deleteQuote(${q.id})">Delete</button>
+          </td>
         </tr>
       `).join('');
     }
@@ -1102,6 +1105,23 @@
     function filterQuotes() {
       const val = document.getElementById('quotesFilter').value;
       renderQuotes(val ? allQuotes.filter(q => q.status === val) : allQuotes);
+    }
+
+    async function deleteQuote(id) {
+      const q = allQuotes.find(x => x.id === id);
+      const name = q ? `${q.first_name} ${q.last_name}`.trim() : 'this quote';
+      if (!confirm(`Delete quote request for ${name}? This cannot be undone.`)) return;
+      try {
+        // Disassociate any job referencing this quote so foreign key constraint doesn't block deletion
+        await dbPatchWhere('jobs', `quote_id=eq.${id}`, { quote_id: null }).catch(() => {});
+        await dbDelete('quotes', id);
+        allQuotes = allQuotes.filter(item => item.id !== id);
+        filterQuotes();
+        updateStats();
+        closeModal('quoteModal');
+      } catch (err) {
+        alert('Delete failed: ' + err.message);
+      }
     }
 
     async function openQuoteModal(id) {
@@ -1142,17 +1162,22 @@
         </div>
 
         <p class="detail-section-title">Actions</p>
-        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-          <a href="tel:${esc(q.phone)}" class="btn-sm btn-gold">
-            <i class="ph ph-phone"></i> Call Client
-          </a>
-          <a href="mailto:${esc(q.email)}" class="btn-sm btn-outline">
-            <i class="ph ph-envelope"></i> Email Client
-          </a>
-          ${q.status === 'accepted' ? `
-          <button class="btn-sm btn-gold" onclick="convertToJob(${id})">
-            <i class="ph ph-folder-plus"></i> Create Job Folder
-          </button>` : ''}
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <a href="tel:${esc(q.phone)}" class="btn-sm btn-gold">
+              <i class="ph ph-phone"></i> Call Client
+            </a>
+            <a href="mailto:${esc(q.email)}" class="btn-sm btn-outline">
+              <i class="ph ph-envelope"></i> Email Client
+            </a>
+            ${q.status === 'accepted' ? `
+            <button class="btn-sm btn-gold" onclick="convertToJob(${id})">
+              <i class="ph ph-folder-plus"></i> Create Job Folder
+            </button>` : ''}
+          </div>
+          <button class="btn-sm btn-danger" onclick="deleteQuote(${id})">
+            <i class="ph ph-trash"></i> Delete Quote Request
+          </button>
         </div>
       `;
 

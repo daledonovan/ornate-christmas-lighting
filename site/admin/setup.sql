@@ -62,6 +62,10 @@ create policy "Auth users can update quotes"
   on quotes for update
   using (auth.role() = 'authenticated');
 
+create policy "Auth users can delete quotes"
+  on quotes for delete
+  using (auth.role() = 'authenticated');
+
 -- Jobs — authenticated only
 alter table jobs enable row level security;
 
