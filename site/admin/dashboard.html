@@ -1031,6 +1031,14 @@
       return r.json();
     }
 
+    async function dbDelete(table, id) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+        method: 'DELETE',
+        headers: { ...authHeaders() }
+      });
+      if (!r.ok) throw new Error(await r.text());
+    }
+
     // ─── VIEW MANAGEMENT ──────────────────────────────────────
     function showView(view) {
       ['quotes', 'jobs', 'admins', 'calendar'].forEach(v => {
@@ -1234,7 +1242,7 @@
           <td><span class="badge badge--${(j.status||'scheduled').replace(' ','-')}">${j.status || 'scheduled'}</span></td>
           <td style="display:flex;gap:0.4rem;">
             <button class="btn-sm btn-outline" onclick="event.stopPropagation(); openJobModal(${j.id})">Open</button>
-            <button class="btn-sm" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);" onclick="event.stopPropagation(); deleteJob(${j.id}, '${esc(j.first_name)} ${esc(j.last_name)}')">Delete</button>
+            <button class="btn-sm btn-danger" onclick="event.stopPropagation(); deleteJob(${j.id})">Delete</button>
           </td>
         </tr>
       `).join('');
@@ -1245,12 +1253,23 @@
       renderJobs(val ? allJobs.filter(j => j.status === val) : allJobs);
     }
 
-    async function deleteJob(id, name) {
+    async function deleteJob(id) {
+      const j = allJobs.find(x => x.id === id);
+      const name = j ? `${j.first_name} ${j.last_name}`.trim() : 'this job';
       if (!confirm(`Delete job folder for ${name}? This cannot be undone.`)) return;
-      const { error } = await sb.from('jobs').delete().eq('id', id);
-      if (error) { alert('Delete failed: ' + error.message); return; }
-      allJobs = allJobs.filter(j => j.id !== id);
-      renderJobs(allJobs);
+      try {
+        await dbDelete('jobs', id);
+        allJobs = allJobs.filter(item => item.id !== id);
+        filterJobs();
+        updateStats();
+        closeModal('jobModal');
+        closeModal('calDayModal');
+        if (document.getElementById('view-calendar')?.style.display !== 'none') {
+          renderCalendar();
+        }
+      } catch (err) {
+        alert('Delete failed: ' + err.message);
+      }
     }
 
     async function openJobModal(id) {
@@ -1342,10 +1361,17 @@
             </div>
           </div>
 
-          <button class="btn-sm btn-gold" onclick="saveJobDetails(${id})">
-            <i class="ph ph-floppy-disk"></i> Save Changes
-          </button>
-          <span id="jobDetailSaved_${id}" style="font-size:0.8rem; color:#86efac; display:none; margin-left:0.75rem;">✓ Saved</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid rgba(201,168,76,0.12); flex-wrap:wrap; gap:0.75rem;">
+            <div style="display:flex; align-items:center;">
+              <button class="btn-sm btn-gold" onclick="saveJobDetails(${id})">
+                <i class="ph ph-floppy-disk"></i> Save Changes
+              </button>
+              <span id="jobDetailSaved_${id}" style="font-size:0.8rem; color:#86efac; display:none; margin-left:0.75rem;">✓ Saved</span>
+            </div>
+            <button class="btn-sm btn-danger" onclick="deleteJob(${id})">
+              <i class="ph ph-trash"></i> Delete Job Folder
+            </button>
+          </div>
         </div>
 
         <!-- NOTES TAB -->
